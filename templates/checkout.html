@@ -509,9 +509,7 @@ $(function(){
     else $('#id_phone').removeClass('is-invalid');
 
     if(mode==='map'){
-      if(!$('#hidLat').val()){
-        showMsg("Xaritada joylashuvingizni belgilang yoki 'Qo'lda kiritish'ni tanlang",'danger');ok=false;
-      }
+      // lokatsiya ixtiyoriy — majburiy emas
     } else {
       const region=$('#id_region').val(),city=$('#id_city').val(),addr=$('#id_address').val().trim();
       if(!region){$('#id_region').addClass('is-invalid');ok=false;}else $('#id_region').removeClass('is-invalid');

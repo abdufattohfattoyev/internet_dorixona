@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Bosh sahifa — vitagum-gummy.uz | Online Dorixona{% endblock %}
+{% block title %}Bosh sahifa — vitagum-gummy.uz | BAT Market{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -214,7 +214,7 @@
   <div class="sec-head" id="products">
     <div class="sec-head-l">
       <div class="sec-dot"></div>
-      <h2>{% if request.GET.q %}"{{ request.GET.q }}" natijalari{% else %}Barcha dorilar{% endif %}</h2>
+      <h2>{% if request.GET.q %}"{{ request.GET.q }}" natijalari{% else %}Barcha vitaminlar{% endif %}</h2>
     </div>
     <span class="sec-count">{{ products.paginator.count }} ta</span>
   </div>

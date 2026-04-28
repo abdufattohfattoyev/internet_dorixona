@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="google-site-verification" content="pv4ejXlbt0uzwhSVOAmi2tFXIRiom_ROzOE3xWFxtr4" />
-  <title>{% block title %}vitagum-gummy.uz — Online Dorixona{% endblock %}</title>
+  <title>{% block title %}vitagum-gummy.uz — BAT Market{% endblock %}</title>
 
   <link rel="shortcut icon"   href="/favicon.ico" type="image/x-icon">
   <link rel="icon"            href="/favicon.ico" type="image/x-icon">
@@ -365,14 +365,14 @@
       <span class="brand-icon"><i class="fas fa-capsules" style="font-size:17px;color:#fff;"></i></span>
       <div class="brand-text">
         <span class="brand-name"><span class="g">vitagum</span>-<span class="g">gummy</span><span style="color:var(--ink-4);font-weight:600">.uz</span></span>
-        <span class="brand-sub">Online dorixona</span>
+        <span class="brand-sub">Useful Vitagummies</span>
       </div>
     </a>
 
     {% with cur=request.resolver_match.url_name %}{% if cur != 'checkout' and cur != 'order_success' %}
     <form class="search-field" method="GET" action="{% url 'home' %}">
       <i class="fas fa-search search-ico"></i>
-      <input type="text" name="q" placeholder="Dori, vitamin, preparatlarni qidiring…"
+      <input type="text" name="q" placeholder="BAT vitamin, preparatlarni qidiring…"
              value="{{ request.GET.q }}" autocomplete="off">
       <button type="submit" class="search-btn"><i class="fas fa-search"></i><span class="s-txt">Qidirish</span></button>
     </form>
