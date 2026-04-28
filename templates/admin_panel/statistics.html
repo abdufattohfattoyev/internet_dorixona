@@ -1,0 +1,287 @@
+{% extends 'admin_panel/base_admin.html' %}
+{% load humanize %}
+{% load static %}
+
+{% block title %}Statistika{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.min.js"></script>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/statistics.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-3">Statistika</h2>
+    <p class="text-muted small">Oxirgi yangilanish: {{ last_updated|date:"Y-m-d H:i:s e" }}</p>
+
+    <!-- Filters -->
+    <form method="get" class="filter-form">
+        <select name="date_filter" onchange="this.form.submit()">
+            <option value="today" {% if date_filter == 'today' %}selected{% endif %}>Bugun</option>
+            <option value="last_7_days" {% if date_filter == 'last_7_days' %}selected{% endif %}>7 kun</option>
+            <option value="last_30_days" {% if date_filter == 'last_30_days' %}selected{% endif %}>30 kun</option>
+            <option value="custom" {% if date_filter == 'custom' %}selected{% endif %}>Maxsus sana</option>
+        </select>
+        {% if date_filter == 'custom' %}
+            <input type="date" name="start_date" value="{{ start_date|default_if_none:'' }}" required>
+            <input type="date" name="end_date" value="{{ end_date|default_if_none:'' }}" required>
+        {% endif %}
+        <select name="category" onchange="this.form.submit()">
+            <option value="all" {% if category_filter == 'all' %}selected{% endif %}>Barcha kategoriyalar</option>
+            {% for category in categories %}
+                <option value="{{ category.slug }}" {% if category_filter == category.slug %}selected{% endif %}>
+                    {{ category.name }}
+                </option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary">Filtrlash</button>
+        <a href="{% url 'admin_statistics_export' %}?date_filter={{ date_filter }}&category={{ category_filter }}{% if start_date %}&start_date={{ start_date }}{% endif %}{% if end_date %}&end_date={{ end_date }}{% endif %}" class="btn btn-primary">CSV Yuklab olish</a>
+    </form>
+
+    <!-- Today's Summary - Mobile Version -->
+    <div class="card mobile-only">
+        <div class="card-header">
+            <h5 class="mb-0">Bugungi Statistika</h5>
+        </div>
+        <div class="card-body">
+            <div class="mobile-stats-grid">
+                <div class="mobile-stat-card">
+                    <div class="label">Jami buyurtmalar</div>
+                    <div class="value">{{ today_order_count }} ta</div>
+                </div>
+                <div class="mobile-stat-card">
+                    <div class="label">Sotilgan buyurtmalar</div>
+                    <div class="value">{{ today_completed_count }} ta</div>
+                </div>
+                <div class="mobile-stat-card">
+                    <div class="label">Daromad</div>
+                    <div class="value">{{ today_revenue|floatformat:0|intcomma }} so'm</div>
+                </div>
+            </div>
+            <h6 class="mt-3 mb-2">Status bo'yicha</h6>
+            <div class="mobile-status-grid">
+                {% for item in today_status_distribution %}
+                    <div class="mobile-status-card status-{{ item.status|lower }}">
+                        <div class="status">{{ item.status }}</div>
+                        <div class="count">{{ item.count }} ta</div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Today's Summary - Desktop Version -->
+    <div class="card desktop-only">
+        <div class="card-header">
+            <h5 class="mb-0">Bugungi Statistika</h5>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-4 col-12">
+                    <p class="text-muted small mb-1">Jami buyurtmalar</p>
+                    <h4>{{ today_order_count }} ta</h4>
+                </div>
+                <div class="col-md-4 col-12">
+                    <p class="text-muted small mb-1">Sotilgan buyurtmalar</p>
+                    <h4>{{ today_completed_count }} ta</h4>
+                </div>
+                <div class="col-md-4 col-12">
+                    <p class="text-muted small mb-1">Daromad</p>
+                    <h4 class="price-value">{{ today_revenue|floatformat:0|intcomma }} so'm</h4>
+                </div>
+            </div>
+            <div class="row status-row">
+                {% for item in today_status_distribution %}
+                    <div class="col-md-3 col-6">
+                        <div class="status-card status-{{ item.status|lower }}">
+                            <h6 class="mb-1 small">{{ item.status }}</h6>
+                            <p class="mb-0 fw-bold">{{ item.count }} ta</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Period Summary - Mobile Version -->
+    <div class="card mobile-only">
+        <div class="card-header">
+            <h5 class="mb-0">Tanlangan Davr</h5>
+        </div>
+        <div class="card-body">
+            <div class="mobile-stats-grid">
+                <div class="mobile-stat-card">
+                    <div class="label">Jami buyurtmalar</div>
+                    <div class="value">{{ period_total_orders }} ta</div>
+                </div>
+                <div class="mobile-stat-card">
+                    <div class="label">Sotilgan buyurtmalar</div>
+                    <div class="value">{{ period_completed_orders }} ta</div>
+                </div>
+                <div class="mobile-stat-card">
+                    <div class="label">Umumiy daromad</div>
+                    <div class="value">{{ period_total_sales|floatformat:0|intcomma }} so'm</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Period Summary - Desktop Version -->
+    <div class="card desktop-only">
+        <div class="card-header">
+            <h5 class="mb-0">Tanlangan Davr Statistikasi</h5>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-4 col-12">
+                    <p class="text-muted small mb-1">Jami buyurtmalar</p>
+                    <h4>{{ period_total_orders }} ta</h4>
+                </div>
+                <div class="col-md-4 col-12">
+                    <p class="text-muted small mb-1">Sotilgan buyurtmalar</p>
+                    <h4>{{ period_completed_orders }} ta</h4>
+                </div>
+                <div class="col-md-4 col-12">
+                    <p class="text-muted small mb-1">Umumiy daromad</p>
+                    <h4 class="price-value">{{ period_total_sales|floatformat:0|intcomma }} so'm</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sales by Date -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Sana bo'yicha savdo</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="responsive-table">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Sana</th>
+                            <th>Jami buyurtmalar</th>
+                            <th>Sotilgan buyurtmalar</th>
+                            <th>Daromad</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sale in period_sales %}
+                            <tr>
+                                <td>{{ sale.date|date:"d M Y" }}</td>
+                                <td>{{ sale.count }} ta</td>
+                                <td>{{ sale.completed_count }} ta</td>
+                                <td class="price-value">{{ sale.total|floatformat:0|intcomma }} so'm</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- All Sold Products -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Sotilgan Mahsulotlar</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="responsive-table">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Mahsulot</th>
+                            <th>Kategoriya</th>
+                            <th>Sotilgan soni</th>
+                            <th>Daromad</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products_sales %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ product.product__name }}</td>
+                                <td>{{ product.product__category__name }}</td>
+                                <td>{{ product.total_quantity }} ta</td>
+                                <td class="price-value">{{ product.total_revenue|floatformat:0|intcomma }} so'm</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-3">Tanlangan davrda sotilgan mahsulotlar yo'q</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    const salesData = {
+        labels: [{% for sale in period_sales %}'{{ sale.date|date:"d M" }}',{% endfor %}],
+        datasets: [
+            {
+                label: 'Daromad (so\'m)',
+                data: [{% for sale in period_sales %}{{ sale.total }},{% endfor %}],
+                backgroundColor: 'rgba(37, 99, 235, 0.2)',
+                borderColor: 'rgba(37, 99, 235, 1)',
+                borderWidth: 2,
+                tension: 0.4,
+                fill: true
+            },
+            {
+                label: 'Sotilgan buyurtmalar',
+                data: [{% for sale in period_sales %}{{ sale.completed_count }},{% endfor %}],
+                backgroundColor: 'rgba(22, 163, 74, 0.2)',
+                borderColor: 'rgba(22, 163, 74, 1)',
+                borderWidth: 2,
+                tension: 0.4,
+                fill: true
+            }
+        ]
+    };
+
+    new Chart(ctx, {
+        type: 'line',
+        data: salesData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: { font: { size: 12 } }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label.includes('Daromad')) {
+                                return `${label}: ${context.parsed.y.toLocaleString()} so'm`;
+                            }
+                            return `${label}: ${context.parsed.y} ta`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: { display: true, text: 'Qiymat' }
+                },
+                x: {
+                    title: { display: true, text: 'Sana' }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %}

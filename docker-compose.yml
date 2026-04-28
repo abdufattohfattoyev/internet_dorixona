@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    command: >
+      sh -c "python manage.py collectstatic --noinput --clear &&
+             gunicorn --bind 0.0.0.0:8005 --workers 3 --timeout 120 config.wsgi:application"
+    ports:
+      - "127.0.0.1:8005:8005"
+    volumes:
+      - .:/app
+      - ./staticfiles:/app/staticfiles
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+      - DEBUG=${DEBUG}
+      - DATA_UPLOAD_MAX_MEMORY_SIZE=52428800
+      - FILE_UPLOAD_MAX_MEMORY_SIZE=52428800
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

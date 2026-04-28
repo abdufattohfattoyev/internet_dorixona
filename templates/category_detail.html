@@ -1,0 +1,638 @@
+{% extends 'base.html' %}
+{% block title %}{{ category.name }} — vitagum-gummy.uz{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ═══════════════════════════════════════
+   OVERFLOW FIX — horizontal scroll oldini olish
+   ═══════════════════════════════════════ */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* ═══════════════════════════════════════
+   MAIN WRAP
+   ═══════════════════════════════════════ */
+.main-wrap {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 14px 12px 110px;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+@media (min-width: 480px) { .main-wrap { padding: 18px 16px 110px; } }
+@media (min-width: 768px) { .main-wrap { padding: 24px 24px 120px; } }
+@media (min-width: 1024px) { .main-wrap { padding: 28px 32px 120px; } }
+
+/* ═══════════════════════════════════════
+   SECTION HEADER
+   ═══════════════════════════════════════ */
+.sec-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  gap: 8px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+.sec-head-l {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+}
+.sec-dot {
+  width: 4px;
+  height: 18px;
+  border-radius: 4px;
+  background: linear-gradient(to bottom, #16a34a, #0ea5e9);
+  flex-shrink: 0;
+}
+.sec-head h2 {
+  font-size: .88rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+@media (min-width: 480px) { .sec-head h2 { font-size: .96rem; } }
+.sec-count {
+  font-size: .7rem;
+  font-weight: 600;
+  color: #94a3b8;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 2px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════
+   SEARCH BANNER
+   ═══════════════════════════════════════ */
+.search-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #f0fdf4;
+  border-radius: 12px;
+  border: 1px solid rgba(22,163,74,.2);
+  margin-bottom: 12px;
+  font-size: .8rem;
+  font-weight: 600;
+  color: #15803d;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.search-banner > i { flex-shrink: 0; }
+.search-banner .sq {
+  font-weight: 800;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.s-clear-link {
+  margin-left: auto;
+  font-size: .7rem;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: all .15s;
+  text-decoration: none;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+.s-clear-link:hover { color: #ef4444; background: #fef2f2; }
+
+/* ═══════════════════════════════════════
+   PRODUCT GRID
+   ═══════════════════════════════════════ */
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(14px) scale(.97); }
+  to   { opacity: 1; transform: none; }
+}
+
+.pgrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+@media (min-width: 480px) { .pgrid { grid-template-columns: repeat(3, 1fr); gap: 12px; } }
+@media (min-width: 768px) { .pgrid { grid-template-columns: repeat(4, 1fr); gap: 14px; } }
+@media (min-width: 1100px) { .pgrid { grid-template-columns: repeat(5, 1fr); gap: 16px; } }
+
+/* ── Product Card ── */
+.pc {
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e2e8f0;
+  transition: box-shadow .22s, transform .22s, border-color .22s;
+  animation: cardIn .35s cubic-bezier(.22,1,.36,1) both;
+  position: relative;
+  min-width: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+@media (min-width: 768px) { .pc { border-radius: 18px; } }
+
+.pc:hover {
+  box-shadow: 0 8px 24px rgba(0,0,0,.1);
+  transform: translateY(-3px);
+  border-color: rgba(22,163,74,.25);
+}
+@media (hover: none) { .pc:hover { transform: none; box-shadow: none; } }
+
+/* Animation delays */
+.pgrid .pc:nth-child(1)  { animation-delay: .03s }
+.pgrid .pc:nth-child(2)  { animation-delay: .06s }
+.pgrid .pc:nth-child(3)  { animation-delay: .09s }
+.pgrid .pc:nth-child(4)  { animation-delay: .12s }
+.pgrid .pc:nth-child(5)  { animation-delay: .15s }
+.pgrid .pc:nth-child(n+6){ animation-delay: .18s }
+
+/* Card image */
+.pc-img {
+  position: relative;
+  padding-top: 72%;
+  background: linear-gradient(145deg, #f8fafc, #f1f5f9);
+  overflow: hidden;
+  border-bottom: 1px solid #f1f5f9;
+  flex-shrink: 0;
+}
+.pc-img a {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: block;
+}
+.pc-img img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 10px;
+  transition: transform .4s cubic-bezier(.22,1,.36,1);
+}
+.pc:hover .pc-img img { transform: scale(1.06); }
+.pc-no-img {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+}
+
+/* Card body */
+.pc-body {
+  padding: 9px 10px 10px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 3px;
+  min-width: 0;
+  overflow: hidden;
+}
+@media (min-width: 480px) { .pc-body { padding: 11px 12px 12px; gap: 4px; } }
+
+.pc-cat {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: .62rem;
+  font-weight: 600;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pc-cat i { font-size: .56rem; flex-shrink: 0; }
+
+.pc-name {
+  font-size: .77rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.18em;
+  word-break: break-word;
+}
+@media (min-width: 480px) { .pc-name { font-size: .82rem; min-height: 2.3em; } }
+
+.pc-price {
+  font-size: .86rem;
+  font-weight: 900;
+  color: #16a34a;
+  letter-spacing: -.2px;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media (min-width: 480px) { .pc-price { font-size: .94rem; } }
+
+/* Card actions */
+.pc-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 7px;
+  min-width: 0;
+}
+
+.btn-eye {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #94a3b8;
+  border: 1px solid #e2e8f0;
+  transition: all .18s;
+  text-decoration: none;
+  font-size: .76rem;
+}
+@media (min-width: 480px) { .btn-eye { width: 34px; height: 34px; } }
+.btn-eye:hover { color: #0ea5e9; background: #e0f2fe; border-color: rgba(14,165,233,.3); }
+
+.btn-cart {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 7px 4px;
+  border-radius: 8px;
+  font-size: .68rem;
+  font-weight: 700;
+  border: 1.5px solid transparent;
+  background: #16a34a;
+  color: #fff;
+  transition: all .18s;
+  cursor: pointer;
+  font-family: var(--font);
+  white-space: nowrap;
+  min-width: 0;
+  overflow: hidden;
+}
+@media (min-width: 380px) { .btn-cart { font-size: .72rem; gap: 5px; } }
+@media (min-width: 480px) { .btn-cart { font-size: .75rem; gap: 6px; padding: 8px 6px; } }
+
+.btn-cart:hover { background: #15803d; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(22,163,74,.3); }
+.btn-cart:active { transform: scale(.96); }
+.btn-cart.added { background: #dcfce7; color: #16a34a; border-color: rgba(22,163,74,.3); }
+.btn-cart.added:hover { background: #fef2f2; color: #ef4444; border-color: rgba(239,68,68,.25); }
+.btn-cart:disabled { opacity: .7; cursor: default; transform: none !important; box-shadow: none !important; }
+
+/* ═══════════════════════════════════════
+   EMPTY STATE
+   ═══════════════════════════════════════ */
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 48px 20px;
+  background: #fff;
+  border-radius: 16px;
+  border: 2px dashed #e2e8f0;
+}
+@media (min-width: 480px) { .empty-state { padding: 64px 24px; } }
+.empty-state-ico { font-size: 2.4rem; margin-bottom: 10px; }
+.empty-state h5 { font-size: .92rem; font-weight: 800; color: #0f172a; margin-bottom: 5px; }
+.empty-state p { font-size: .82rem; color: #94a3b8; margin: 0; }
+
+/* ═══════════════════════════════════════
+   PAGINATION
+   ═══════════════════════════════════════ */
+.pg-wrap {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 24px;
+  padding: 0;
+  list-style: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+@media (min-width: 480px) { .pg-wrap { gap: 5px; margin-top: 32px; } }
+
+.pg-wrap .page-link {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: .78rem !important;
+  font-weight: 600 !important;
+  padding: 0 !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #475569 !important;
+  background: #fff !important;
+  transition: all .16s !important;
+}
+.pg-wrap .page-link:hover {
+  background: #f0fdf4 !important;
+  color: #16a34a !important;
+  border-color: rgba(22,163,74,.3) !important;
+}
+.pg-wrap .page-item.active .page-link {
+  background: #16a34a !important;
+  border-color: #16a34a !important;
+  color: #fff !important;
+  box-shadow: 0 3px 10px rgba(22,163,74,.3) !important;
+}
+
+/* ═══════════════════════════════════════
+   ORDER BAR (fixed bottom)
+   ═══════════════════════════════════════ */
+.order-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 998;
+  padding: 10px 14px 12px;
+  background: #fff;
+  border-top: 1px solid #e2e8f0;
+  box-shadow: 0 -4px 28px rgba(0,0,0,.1);
+  display: none;
+  box-sizing: border-box;
+}
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .order-bar { padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
+}
+
+.ob-inner {
+  max-width: 520px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+}
+
+.ob-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+.ob-ico {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #dcfce7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #16a34a;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+@media (min-width: 480px) { .ob-ico { width: 44px; height: 44px; font-size: 17px; border-radius: 14px; } }
+
+.ob-lbl { font-size: .66rem; color: #94a3b8; font-weight: 500; }
+.ob-count { font-size: .86rem; font-weight: 800; color: #0f172a; margin-top: 1px; white-space: nowrap; }
+@media (min-width: 480px) { .ob-count { font-size: .92rem; } }
+.ob-price { font-size: .68rem; color: #16a34a; font-weight: 700; }
+
+.ob-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: .8rem;
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  color: #fff;
+  text-decoration: none;
+  transition: all .18s;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(22,163,74,.3);
+  white-space: nowrap;
+}
+@media (min-width: 480px) { .ob-btn { padding: 11px 20px; font-size: .86rem; gap: 8px; } }
+.ob-btn:hover {
+  background: linear-gradient(135deg, #15803d, #166534);
+  color: #fff;
+  transform: translateY(-1px);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-wrap">
+
+  <!-- SECTION HEADER -->
+  <div class="sec-head" id="products">
+    <div class="sec-head-l">
+      <div class="sec-dot"></div>
+      <h2>
+        {% if request.GET.q %}
+          "{{ request.GET.q }}" — {{ category.name }}
+        {% else %}
+          {{ category.name }}
+        {% endif %}
+      </h2>
+    </div>
+    <span class="sec-count">{{ products.paginator.count }} ta</span>
+  </div>
+
+  <!-- SEARCH BANNER -->
+  {% if request.GET.q %}
+  <div class="search-banner">
+    <i class="fas fa-search" style="flex-shrink:0"></i>
+    <span class="sq">"{{ request.GET.q }}" bo'yicha qidiruv natijalari</span>
+    <a href="{% url 'category_detail' category.slug %}" class="s-clear-link">
+      <i class="fas fa-times"></i> Tozalash
+    </a>
+  </div>
+  {% endif %}
+
+  <!-- PRODUCT GRID -->
+  <div class="pgrid">
+    {% for product in products %}
+    <div class="pc">
+      <div class="pc-img">
+        <a href="{% url 'product_detail' product.slug %}"></a>
+        {% with primary_image=product.get_primary_image %}
+          {% if primary_image and primary_image.image %}
+            <img src="{{ primary_image.image.url }}" alt="{{ product.name }}" loading="lazy">
+          {% else %}
+            <div class="pc-no-img">💊</div>
+          {% endif %}
+        {% endwith %}
+      </div>
+      <div class="pc-body">
+        <div class="pc-cat"><i class="fas fa-tag"></i>{{ product.category.name }}</div>
+        <div class="pc-name">{{ product.name }}</div>
+        <div class="pc-price">{{ product.price|floatformat:0 }} so'm</div>
+        <div class="pc-actions">
+          <a href="{% url 'product_detail' product.slug %}" class="btn-eye" title="Batafsil">
+            <i class="fas fa-eye"></i>
+          </a>
+          <form class="add-to-cart-form" data-product-id="{{ product.id }}" style="flex:1;display:flex;min-width:0;">
+            {% csrf_token %}
+            <button type="submit"
+              class="btn-cart {% if product in cart_products %}added{% endif %}"
+              {% if product in cart_products %}disabled{% endif %}>
+              <i class="fas {% if product in cart_products %}fa-check{% else %}fa-cart-plus{% endif %}"></i>
+              <span>{% if product in cart_products %}Qo'shildi{% else %}Savatga{% endif %}</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="empty-state">
+      <div class="empty-state-ico">🔍</div>
+      <h5>Mahsulot topilmadi</h5>
+      <p>Boshqa kalit so'z kiriting yoki bosh sahifaga qayting</p>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- PAGINATION -->
+  {% if products.paginator.num_pages > 1 %}
+  <nav class="mt-2" aria-label="Sahifalar">
+    <ul class="pagination pg-wrap">
+      {% if products.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ products.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+          <i class="fas fa-chevron-left" style="font-size:.65rem"></i>
+        </a>
+      </li>
+      {% else %}
+      <li class="page-item disabled">
+        <span class="page-link"><i class="fas fa-chevron-left" style="font-size:.65rem"></i></span>
+      </li>
+      {% endif %}
+
+      {% for num in products.paginator.page_range %}
+        {% if products.number == num %}
+        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+        {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a>
+        </li>
+        {% endif %}
+      {% endfor %}
+
+      {% if products.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ products.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+          <i class="fas fa-chevron-right" style="font-size:.65rem"></i>
+        </a>
+      </li>
+      {% else %}
+      <li class="page-item disabled">
+        <span class="page-link"><i class="fas fa-chevron-right" style="font-size:.65rem"></i></span>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+
+</div>
+
+<!-- ORDER BAR -->
+<div class="order-bar" id="orderBar" {% if cart_count and cart_count > 0 %}style="display:block"{% endif %}>
+  <div class="ob-inner">
+    <div class="ob-info">
+      <div class="ob-ico"><i class="fas fa-shopping-bag"></i></div>
+      <div style="min-width:0;overflow:hidden;">
+        <div class="ob-lbl">Savatda</div>
+        <div class="ob-count"><span id="obCount">{{ cart_count }}</span> ta mahsulot</div>
+        <div class="ob-price" id="obPrice"></div>
+      </div>
+    </div>
+    <a href="{% url 'cart_detail' %}" class="ob-btn">
+      <i class="fas fa-shopping-cart"></i>Buyurtma berish
+    </a>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function(){
+
+  $('.add-to-cart-form').on('submit', function(e){
+    e.preventDefault();
+    const form = $(this);
+    const productId = form.data('product-id');
+    const btn = form.find('.btn-cart');
+    const origHtml = btn.html();
+
+    btn.html('<span class="spinner-border spinner-border-sm" role="status"></span>').prop('disabled', true);
+
+    $.ajax({
+      url: `/cart/add/${productId}/`,
+      method: 'POST',
+      data: { quantity: 1, csrfmiddlewaretoken: '{{ csrf_token }}' },
+      success: function(res){
+        const count = res.cart_count;
+        bumpCartDot(count);
+        const obCount = document.getElementById('obCount');
+        if (obCount) obCount.textContent = count;
+
+        if (res.already_in_cart) {
+          showToast('Bu mahsulot allaqachon savatda!', 'info');
+          btn.html(origHtml).prop('disabled', false);
+        } else {
+          showToast("Savatga qo'shildi ✓", 'success');
+          btn.html('<i class="fas fa-check"></i><span>Qo\'shildi</span>')
+             .addClass('added').prop('disabled', true);
+        }
+      },
+      error: function(){
+        showToast("Xatolik yuz berdi, qayta urining", 'danger');
+        btn.html(origHtml).prop('disabled', false);
+      }
+    });
+  });
+
+  const initCount = parseInt('{{ cart_count|default:0 }}');
+  if (initCount > 0) {
+    const bar = document.getElementById('orderBar');
+    if (bar) bar.style.display = 'block';
+  }
+
+});
+</script>
+{% endblock %}

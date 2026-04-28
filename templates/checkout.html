@@ -1,0 +1,543 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block title %}Buyurtma berish — vitagum-gummy.uz{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+/* ── Green pharmacy theme overrides ── */
+:root {
+  --p:      #16a34a;
+  --p-d:    #15803d;
+  --p-l:    #dcfce7;
+  --p-xl:   #f0fdf4;
+  --ink:    #0f172a;
+  --ink-2:  #1e293b;
+  --ink-3:  #475569;
+  --ink-4:  #94a3b8;
+  --sur:    #ffffff;
+  --sur-2:  #f1f5f9;
+  --line:   #e2e8f0;
+  --line-s: #f1f5f9;
+  --r:      12px;
+  --r-s:    8px;
+  --r-l:    16px;
+  --sh-s:   0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --t:      all .18s cubic-bezier(.4,0,.2,1);
+  --amber:  #f59e0b;
+  --red:    #ef4444;
+}
+
+/* ── Layout ── */
+.co-wrap{max-width:1100px;margin:0 auto;padding:20px 16px 60px;}
+@media(min-width:768px){.co-wrap{padding:28px 24px 60px;}}
+
+.co-title{font-size:1.25rem;font-weight:800;color:var(--ink);margin-bottom:20px;display:flex;align-items:center;gap:10px;}
+.co-title i{color:var(--p);}
+
+.co-grid{display:grid;grid-template-columns:1fr;gap:20px;}
+@media(min-width:992px){.co-grid{grid-template-columns:1fr 340px;align-items:start;}}
+@media(max-width:991px){.summary-card{order:-1;}}
+
+/* ── Form card ── */
+.form-card{background:var(--sur);border-radius:var(--r-l);padding:22px 20px;border:1px solid var(--line);box-shadow:var(--sh-s);}
+@media(min-width:768px){.form-card{padding:28px 32px;}}
+
+.form-section-title{font-size:.9rem;font-weight:700;color:var(--ink);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.form-section-title i{color:var(--p);}
+.co-divider{border:none;border-top:1px solid var(--line-s);margin:20px 0;}
+
+.field-group{margin-bottom:14px;}
+.field-group label{display:block;font-size:.76rem;font-weight:700;color:var(--ink-4);margin-bottom:6px;text-transform:uppercase;letter-spacing:.4px;}
+.field-group label .req{color:var(--red);margin-left:2px;}
+
+.form-control,.form-select{
+  border-radius:var(--r-s) !important;
+  border:1.5px solid var(--line) !important;
+  padding:10px 13px !important;
+  font-size:.9rem !important;
+  width:100%;
+  transition:border-color .15s,box-shadow .15s !important;
+  background:var(--sur) !important;
+  color:var(--ink) !important;
+  box-shadow:none !important;
+}
+.form-control:focus,.form-select:focus{
+  border-color:var(--p) !important;
+  box-shadow:0 0 0 3px rgba(22,163,74,.12) !important;
+  outline:none !important;
+}
+.form-control.is-invalid,.form-select.is-invalid{border-color:var(--red) !important;}
+.field-hint{font-size:.76rem;color:var(--ink-4);margin-top:4px;}
+.city-loading{display:none;font-size:.8rem;color:var(--ink-4);margin-top:5px;align-items:center;gap:6px;}
+
+/* ── Mode tabs ── */
+.mode-tabs{display:flex;gap:6px;margin-bottom:16px;background:var(--sur-2);border-radius:var(--r);padding:4px;border:1px solid var(--line);}
+.mode-tab{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:7px;
+  padding:9px 14px;border-radius:var(--r-s);
+  font-size:.82rem;font-weight:700;border:none;
+  background:transparent;color:var(--ink-4);
+  transition:var(--t);cursor:pointer;font-family:inherit;white-space:nowrap;
+}
+.mode-tab:hover{color:var(--ink-3);background:var(--sur);}
+.mode-tab.active{background:var(--sur);color:var(--p);box-shadow:0 1px 4px rgba(0,0,0,.08);}
+.mode-tab i{font-size:.8rem;}
+
+/* ── Map ── */
+.map-container{position:relative;border-radius:var(--r-l);overflow:hidden;border:1.5px solid var(--line);isolation:isolate;}
+#deliveryMap{height:320px;width:100%;background:#e8f4f8;}
+@media(min-width:640px){#deliveryMap{height:400px;}}
+/* Fix Leaflet tile clipping inside rounded container */
+.leaflet-tile-container img,.leaflet-tile{border-radius:0 !important;}
+
+.map-locate-btn{
+  position:absolute;bottom:12px;left:50%;transform:translateX(-50%);z-index:1000;
+  display:flex;align-items:center;gap:7px;padding:9px 18px;border-radius:30px;
+  background:var(--sur);color:var(--ink-2);border:1.5px solid var(--line);
+  font-size:.82rem;font-weight:700;font-family:inherit;
+  box-shadow:0 2px 12px rgba(0,0,0,.15);transition:var(--t);cursor:pointer;white-space:nowrap;
+}
+.map-locate-btn:hover{border-color:var(--p);color:var(--p);background:var(--p-xl);}
+.map-locate-btn:disabled{opacity:.65;cursor:not-allowed;}
+
+.map-hint{font-size:.78rem;color:var(--ink-4);margin-top:9px;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.map-hint i{color:var(--p);flex-shrink:0;}
+.map-hint-switch{margin-left:auto;background:none;border:none;padding:0;font-size:.78rem;font-weight:700;color:var(--p);cursor:pointer;font-family:inherit;text-decoration:underline;text-decoration-style:dotted;}
+.map-hint-switch:hover{color:var(--p-d);}
+
+.gps-blocked-box{display:none;margin-top:10px;padding:12px 14px;background:#fffbeb;border:1.5px solid #fde68a;border-radius:var(--r);gap:10px;align-items:flex-start;}
+.gps-blocked-box i{color:var(--amber);flex-shrink:0;margin-top:2px;}
+.gps-blocked-box p{margin:0;font-size:.83rem;color:var(--ink-2);line-height:1.55;}
+.gps-switch-manual{margin-top:8px;display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:var(--r-s);background:var(--p);color:#fff;font-size:.8rem;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:var(--t);}
+.gps-switch-manual:hover{background:var(--p-d);}
+
+.map-addr-box{margin-top:10px;padding:11px 14px;background:var(--p-xl);border:1.5px solid rgba(22,163,74,.25);border-radius:var(--r);display:flex;align-items:flex-start;gap:9px;font-size:.86rem;color:var(--ink-2);font-weight:500;line-height:1.5;}
+.map-addr-box i{color:var(--p);flex-shrink:0;margin-top:2px;}
+.leaflet-map-pin{filter:drop-shadow(0 3px 6px rgba(0,0,0,.25));}
+
+/* ── Submit ── */
+.btn-checkout{
+  width:100%;padding:14px;border-radius:var(--r-l);font-weight:700;font-size:1rem;
+  border:none;cursor:pointer;background:var(--p);color:#fff;
+  box-shadow:0 4px 16px rgba(22,163,74,.3);transition:var(--t);margin-top:6px;
+  display:flex;align-items:center;justify-content:center;gap:9px;font-family:inherit;
+}
+.btn-checkout:hover{background:var(--p-d);box-shadow:0 6px 24px rgba(22,163,74,.4);transform:translateY(-1px);}
+.btn-checkout:active{transform:none;}
+
+/* ── Summary card ── */
+.summary-card{background:var(--sur);border-radius:var(--r-l);padding:20px;border:1px solid var(--line);box-shadow:var(--sh-s);}
+@media(min-width:992px){.summary-card{position:sticky;top:calc(var(--header-h,106px) + 10px);}}
+.summary-title{font-size:.9rem;font-weight:700;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.summary-title i{color:var(--p);}
+
+.order-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line-s);}
+.order-item:last-of-type{border-bottom:none;}
+.order-item-img{width:44px;height:44px;border-radius:var(--r-s);flex-shrink:0;background:#f8fafc;border:1px solid var(--line);overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.order-item-img img{width:100%;height:100%;object-fit:contain;padding:3px;}
+.order-item-img i{font-size:1.2rem;color:var(--ink-4);}
+.order-item-info{flex:1;min-width:0;}
+.order-item-name{font-size:.82rem;font-weight:600;color:var(--ink-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.order-item-qty{font-size:.74rem;color:var(--ink-4);margin-top:2px;}
+.order-item-price{font-size:.85rem;font-weight:700;color:var(--p);white-space:nowrap;}
+
+.summary-total{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:14px;border-top:2px solid var(--line-s);}
+.summary-total-label{font-size:.9rem;font-weight:700;color:var(--ink);}
+.summary-total-val{font-size:1.15rem;font-weight:900;color:var(--p);}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="co-wrap">
+  <div class="co-title"><i class="fas fa-shopping-bag"></i> Buyurtma berish</div>
+
+  <div class="co-grid">
+
+    <!-- ── FORM ── -->
+    <div class="form-card">
+      <form method="POST" id="order-form" novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="delivery_method" id="deliveryMethod" value="map">
+        <input type="hidden" name="latitude"  id="hidLat" value="">
+        <input type="hidden" name="longitude" id="hidLng" value="">
+        <input type="hidden" name="admin_notes" value="">
+
+        <!-- Personal -->
+        <div class="form-section-title"><i class="fas fa-user"></i> Shaxsiy ma'lumotlar</div>
+        <div class="row g-3">
+          <div class="col-12 col-sm-6">
+            <div class="field-group">
+              <label for="id_first_name">Ism va familiya <span class="req">*</span></label>
+              <input type="text" class="form-control" id="id_first_name" name="first_name"
+                     placeholder="Ism Familiya" value="{{ form.first_name.value|default:'' }}" autocomplete="name">
+            </div>
+          </div>
+          <div class="col-12 col-sm-6">
+            <div class="field-group">
+              <label for="id_phone">Telefon raqam <span class="req">*</span></label>
+              <input type="tel" class="form-control" id="id_phone" name="phone"
+                     placeholder="+998 90 123 45 67" value="{{ form.phone.value|default:'' }}" autocomplete="tel">
+              <div class="field-hint">Namuna: +998901234567</div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="co-divider">
+
+        <!-- Delivery -->
+        <div class="form-section-title"><i class="fas fa-map-marker-alt"></i> Yetkazib berish manzili</div>
+
+        <div class="mode-tabs">
+          <button type="button" class="mode-tab active" id="tabMap" onclick="switchMode('map')">
+            <i class="fas fa-map-marked-alt"></i> Xaritada belgilash
+          </button>
+          <button type="button" class="mode-tab" id="tabManual" onclick="switchMode('manual')">
+            <i class="fas fa-keyboard"></i> Qo'lda kiritish
+          </button>
+        </div>
+
+        <!-- MAP PANEL -->
+        <div id="mapPanel">
+          <div class="map-container">
+            <div id="deliveryMap"></div>
+            <button type="button" class="map-locate-btn" id="locateBtn">
+              <i class="fas fa-crosshairs"></i> Mening joylashuvim
+            </button>
+          </div>
+          <div class="map-hint">
+            <i class="fas fa-info-circle"></i>
+            Xaritani bosing yoki <b>pinni sudrang</b> — joylashuv belgilanadi
+            <button type="button" class="map-hint-switch" onclick="switchMode('manual')">Qo'lda kiritish →</button>
+          </div>
+          <div class="gps-blocked-box" id="gpsBlockedBox">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div>
+              <p><b>GPS ruxsati berilmadi.</b><br>Xaritada qo'lda pin qo'ying yoki quyidagi tugmani bosing:</p>
+              <button type="button" class="gps-switch-manual" onclick="switchMode('manual')">
+                <i class="fas fa-keyboard"></i> Qo'lda kiritish
+              </button>
+            </div>
+          </div>
+          <div class="map-addr-box" id="mapAddrBox" style="display:none">
+            <i class="fas fa-map-pin"></i>
+            <div style="flex:1;min-width:0">
+              <div id="mapAddrText" style="font-weight:600"></div>
+              <div style="font-size:.74rem;color:var(--p);margin-top:3px">
+                <i class="fas fa-arrows-alt" style="font-size:.65rem"></i> Pinni sudrang yoki xaritada boshqa joyni bosing
+              </div>
+            </div>
+            <button type="button" id="clearMapBtn"
+              style="flex-shrink:0;background:none;border:1px solid var(--line);border-radius:6px;
+                     padding:4px 8px;font-size:.75rem;color:var(--ink-4);cursor:pointer;transition:var(--t)">
+              <i class="fas fa-times"></i> Tozalash
+            </button>
+          </div>
+        </div>
+
+        <!-- MANUAL PANEL -->
+        <div id="manualPanel" style="display:none">
+          <div class="field-group">
+            <label for="id_region">Viloyat <span class="req">*</span></label>
+            <select class="form-select" id="id_region" name="region">
+              <option value="">— Viloyat tanlang —</option>
+              <option value="toshkent"       {% if form.region.value == 'toshkent'       %}selected{% endif %}>Toshkent</option>
+              <option value="samarqand"      {% if form.region.value == 'samarqand'      %}selected{% endif %}>Samarqand</option>
+              <option value="fargona"        {% if form.region.value == 'fargona'        %}selected{% endif %}>Farg'ona</option>
+              <option value="andijon"        {% if form.region.value == 'andijon'        %}selected{% endif %}>Andijon</option>
+              <option value="namangan"       {% if form.region.value == 'namangan'       %}selected{% endif %}>Namangan</option>
+              <option value="buxoro"         {% if form.region.value == 'buxoro'         %}selected{% endif %}>Buxoro</option>
+              <option value="navoiy"         {% if form.region.value == 'navoiy'         %}selected{% endif %}>Navoiy</option>
+              <option value="qashqadaryo"    {% if form.region.value == 'qashqadaryo'    %}selected{% endif %}>Qashqadaryo</option>
+              <option value="surxondaryo"    {% if form.region.value == 'surxondaryo'    %}selected{% endif %}>Surxondaryo</option>
+              <option value="xorazm"         {% if form.region.value == 'xorazm'         %}selected{% endif %}>Xorazm</option>
+              <option value="jizzax"         {% if form.region.value == 'jizzax'         %}selected{% endif %}>Jizzax</option>
+              <option value="sirdaryo"       {% if form.region.value == 'sirdaryo'       %}selected{% endif %}>Sirdaryo</option>
+              <option value="qoraqalpogiston"{% if form.region.value == 'qoraqalpogiston'%}selected{% endif %}>Qoraqalpog'iston</option>
+            </select>
+          </div>
+          <div class="field-group">
+            <label for="id_city">Shahar / Tuman <span class="req">*</span></label>
+            <select class="form-select" id="id_city" name="city" disabled>
+              <option value="">— Avval viloyat tanlang —</option>
+              {% if form.city.value %}<option value="{{ form.city.value }}" selected>{{ form.city.value }}</option>{% endif %}
+            </select>
+            <div class="city-loading" id="city-loading"><i class="fas fa-spinner fa-spin"></i> Yuklanmoqda...</div>
+          </div>
+          <div class="field-group">
+            <label for="id_address">Ko'cha, uy raqami <span class="req">*</span></label>
+            <input type="text" class="form-control" id="id_address" name="address"
+                   placeholder="Ko'cha nomi, uy, kvartira"
+                   value="{{ form.address.value|default:'' }}" autocomplete="street-address">
+          </div>
+        </div>
+
+        <hr class="co-divider">
+
+        <div class="field-group">
+          <label for="id_notes">Qo'shimcha izoh</label>
+          <textarea class="form-control" id="id_notes" name="notes" rows="2"
+                    placeholder="Yetkazib berish vaqti yoki boshqa izoh...">{{ form.notes.value|default:'' }}</textarea>
+        </div>
+
+        <button type="submit" class="btn-checkout" id="submitBtn">
+          <i class="fas fa-paper-plane"></i> Buyurtmani tasdiqlash
+        </button>
+      </form>
+    </div>
+
+    <!-- ── SUMMARY ── -->
+    <div class="summary-card">
+      <div class="summary-title"><i class="fas fa-receipt"></i> Buyurtma xulosasi</div>
+      {% for item in cart.cartitem_set.all %}
+      <div class="order-item">
+        <div class="order-item-img">
+          {% with img=item.product.get_primary_image %}
+            {% if img %}<img src="{{ img.image.url }}" alt="{{ item.product.name }}">
+            {% else %}<i class="fas fa-pills"></i>{% endif %}
+          {% endwith %}
+        </div>
+        <div class="order-item-info">
+          <div class="order-item-name">{{ item.product.name }}</div>
+          <div class="order-item-qty">{{ item.quantity }} dona × {{ item.product.price|floatformat:"0"|intcomma }} so'm</div>
+        </div>
+        <div class="order-item-price">{{ item.get_total_price|floatformat:"0"|intcomma }} so'm</div>
+      </div>
+      {% endfor %}
+      <div class="summary-total">
+        <span class="summary-total-label">Jami to'lov:</span>
+        <span class="summary-total-val">{{ cart.get_total_price|floatformat:"0"|intcomma }} so'm</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+$(function(){
+
+  /* ── 1. MODE SWITCH ── */
+  window.switchMode = function(mode){
+    document.getElementById('deliveryMethod').value = mode;
+    const isMap = mode === 'map';
+    document.getElementById('mapPanel').style.display    = isMap ? 'block' : 'none';
+    document.getElementById('manualPanel').style.display = isMap ? 'none'  : 'block';
+    document.getElementById('tabMap').classList.toggle('active',  isMap);
+    document.getElementById('tabManual').classList.toggle('active', !isMap);
+    if(isMap) setTimeout(()=>map.invalidateSize(), 100);
+  };
+
+  /* ── 2. MAP ── */
+  const map = L.map('deliveryMap',{zoomControl:false,attributionControl:false}).setView([41.3,64.5],6);
+  L.control.zoom({position:'topright'}).addTo(map);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+    maxZoom:19,
+    attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>'
+  }).addTo(map);
+  /* Render tiles after body padding-top settles */
+  setTimeout(()=>map.invalidateSize(), 250);
+
+  const pinIcon = L.divIcon({
+    className:'leaflet-map-pin',
+    html:`<svg width="30" height="44" viewBox="0 0 30 44" xmlns="http://www.w3.org/2000/svg">
+           <path d="M15 0C6.72 0 0 6.72 0 15c0 10.84 15 29 15 29S30 25.84 30 15C30 6.72 23.28 0 15 0z" fill="#16a34a"/>
+           <circle cx="15" cy="15" r="7" fill="#fff"/>
+           <circle cx="15" cy="15" r="4" fill="#16a34a"/>
+         </svg>`,
+    iconSize:[30,44],iconAnchor:[15,44]
+  });
+
+  let marker=null, accuracyCircle=null;
+
+  function clearMarker(){
+    if(marker){map.removeLayer(marker);marker=null;}
+    if(accuracyCircle){map.removeLayer(accuracyCircle);accuracyCircle=null;}
+    document.getElementById('hidLat').value='';
+    document.getElementById('hidLng').value='';
+    document.getElementById('mapAddrBox').style.display='none';
+    document.getElementById('mapAddrText').textContent='';
+  }
+
+  function placeMarker(lat,lng,accuracy){
+    document.getElementById('hidLat').value=lat;
+    document.getElementById('hidLng').value=lng;
+    document.getElementById('gpsBlockedBox').style.display='none';
+    if(marker){marker.setLatLng([lat,lng]);}
+    else{
+      marker=L.marker([lat,lng],{icon:pinIcon,draggable:true}).addTo(map);
+      marker.on('dragend',function(e){
+        const p=e.target.getLatLng();
+        map.setView(p,map.getZoom());
+        if(accuracyCircle){map.removeLayer(accuracyCircle);accuracyCircle=null;}
+        placeMarker(p.lat,p.lng);
+      });
+    }
+    if(accuracy&&accuracy>0){
+      if(accuracyCircle)map.removeLayer(accuracyCircle);
+      accuracyCircle=L.circle([lat,lng],{radius:accuracy,color:'#16a34a',fillColor:'#16a34a',fillOpacity:.08,weight:1.5,dashArray:'5'}).addTo(map);
+    }
+    reverseGeocode(lat,lng);
+  }
+
+  function reverseGeocode(lat,lng){
+    const box=document.getElementById('mapAddrBox'),text=document.getElementById('mapAddrText');
+    box.style.display='flex';text.textContent='Aniqlanmoqda...';
+    fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`,{headers:{'Accept-Language':'uz,ru,en'}})
+      .then(r=>r.json())
+      .then(d=>{
+        const a=d.address||{};
+        const parts=[a.road||a.pedestrian||a.neighbourhood||'',a.suburb||a.city_district||'',a.city||a.town||a.village||a.county||'',a.state||''].filter(Boolean);
+        text.textContent=parts.join(', ')||`${lat.toFixed(5)}°, ${lng.toFixed(5)}°`;
+      })
+      .catch(()=>{text.textContent=`${lat.toFixed(5)}°, ${lng.toFixed(5)}°`;});
+  }
+
+  map.on('click',function(e){
+    stopGpsWatch();
+    if(accuracyCircle){map.removeLayer(accuracyCircle);accuracyCircle=null;}
+    map.setView(e.latlng,Math.max(map.getZoom(),16));
+    placeMarker(e.latlng.lat,e.latlng.lng);
+  });
+
+  document.getElementById('clearMapBtn').addEventListener('click',function(){clearMarker();map.setView([41.3,64.5],6);});
+
+  /* ── 3. GPS ── */
+  let gpsWatchId=null,bestAccuracy=Infinity;
+  const GPS_TARGET_M=10,GPS_TIMEOUT_S=25;
+
+  function stopGpsWatch(){
+    if(gpsWatchId!==null){navigator.geolocation.clearWatch(gpsWatchId);gpsWatchId=null;}
+  }
+
+  document.getElementById('locateBtn').addEventListener('click',function(){
+    const btn=this;
+    stopGpsWatch();bestAccuracy=Infinity;btn.disabled=true;
+    if(!navigator.geolocation){document.getElementById('gpsBlockedBox').style.display='flex';btn.disabled=false;return;}
+    btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Aniqlanmoqda...';
+    const autoStop=setTimeout(function(){
+      stopGpsWatch();
+      btn.innerHTML='<i class="fas fa-crosshairs"></i> Mening joylashuvim';btn.disabled=false;
+      if(bestAccuracy<Infinity) showMsg('Joylashuv aniqlandi (~'+Math.round(bestAccuracy)+'m)','success');
+    },GPS_TIMEOUT_S*1000);
+    gpsWatchId=navigator.geolocation.watchPosition(
+      function(pos){
+        const lat=pos.coords.latitude,lng=pos.coords.longitude,acc=pos.coords.accuracy;
+        if(acc<bestAccuracy){
+          bestAccuracy=acc;
+          map.setView([lat,lng],acc<=20?18:acc<=60?17:16);
+          placeMarker(lat,lng,acc);
+          btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> ~'+Math.round(acc)+'m';
+        }
+        if(acc<=GPS_TARGET_M){
+          clearTimeout(autoStop);stopGpsWatch();
+          showMsg('Joylashuv aniqlandi ✓ (~'+Math.round(acc)+'m)','success');
+          btn.innerHTML='<i class="fas fa-crosshairs"></i> Mening joylashuvim';btn.disabled=false;
+        }
+      },
+      function(err){
+        clearTimeout(autoStop);stopGpsWatch();
+        btn.innerHTML='<i class="fas fa-crosshairs"></i> Mening joylashuvim';btn.disabled=false;
+        if(err.code===1){document.getElementById('gpsBlockedBox').style.display='flex';showMsg("GPS ruxsati berilmadi",'warning');}
+        else showMsg("Joylashuvni aniqlab bo'lmadi",'warning');
+      },
+      {enableHighAccuracy:true,maximumAge:0,timeout:GPS_TIMEOUT_S*1000}
+    );
+  });
+
+  /* Auto-detect: non-HTTPS → manual default */
+  const isLocal=['localhost','127.0.0.1','::1'].includes(location.hostname);
+  if(!navigator.geolocation||(location.protocol!=='https:'&&!isLocal)){
+    document.getElementById('tabMap').style.display='none';
+    switchMode('manual');
+  }
+
+  /* ── 4. CITY LOADER ── */
+  function loadCities(region){
+    const city=$('#id_city');
+    $('#city-loading').css('display','flex');
+    city.prop('disabled',true).html('<option value="">Yuklanmoqda...</option>');
+    $.ajax({
+      url:'/get-cities/',data:{region},dataType:'json',
+      success(r){
+        city.html('<option value="">— Shahar/Tuman tanlang —</option>');
+        (r.cities||[]).forEach(c=>city.append(`<option value="${c.name}">${c.name}</option>`));
+        {% if form.city.value %}city.val('{{ form.city.value|escapejs }}');{% endif %}
+        city.prop('disabled',false);
+      },
+      error(){city.html('<option value="">Xatolik yuz berdi</option>');city.prop('disabled',false);},
+      complete(){$('#city-loading').hide();}
+    });
+  }
+  $('#id_region').on('change',function(){
+    const v=$(this).val();
+    if(v)loadCities(v);
+    else $('#id_city').html('<option value="">— Avval viloyat tanlang —</option>').prop('disabled',true);
+  });
+  {% if form.region.value %}loadCities('{{ form.region.value|escapejs }}');{% endif %}
+
+  /* ── 5. VALIDATION ── */
+  function showMsg(msg,type){
+    const colors={success:'#16a34a',danger:'#ef4444',warning:'#f59e0b',info:'#0ea5e9'};
+    const wrap=document.createElement('div');
+    wrap.style.cssText=`position:fixed;top:16px;right:16px;z-index:9999;padding:11px 16px;border-radius:12px;
+      background:${colors[type]||colors.info};color:#fff;font-weight:600;font-size:.88rem;
+      box-shadow:0 8px 24px rgba(0,0,0,.18);animation:fadeSlide .3s ease both;`;
+    wrap.textContent=msg;
+    document.body.appendChild(wrap);
+    setTimeout(()=>{wrap.style.opacity='0';wrap.style.transform='translateX(40px)';setTimeout(()=>wrap.remove(),300);},2500);
+  }
+  if(!document.getElementById('_fadeStyle')){
+    const s=document.createElement('style');s.id='_fadeStyle';
+    s.textContent='@keyframes fadeSlide{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:none}}';
+    document.head.appendChild(s);
+  }
+
+  $('#order-form').on('submit',function(e){
+    e.preventDefault();
+    const form=this;
+    const name=$('#id_first_name').val().trim();
+    const phone=$('#id_phone').val().trim();
+    const mode=$('#deliveryMethod').val();
+    let ok=true;
+
+    if(!name){$('#id_first_name').addClass('is-invalid');ok=false;}
+    else $('#id_first_name').removeClass('is-invalid');
+    if(!phone){$('#id_phone').addClass('is-invalid');ok=false;}
+    else $('#id_phone').removeClass('is-invalid');
+
+    if(mode==='map'){
+      if(!$('#hidLat').val()){
+        showMsg("Xaritada joylashuvingizni belgilang yoki 'Qo'lda kiritish'ni tanlang",'danger');ok=false;
+      }
+    } else {
+      const region=$('#id_region').val(),city=$('#id_city').val(),addr=$('#id_address').val().trim();
+      if(!region){$('#id_region').addClass('is-invalid');ok=false;}else $('#id_region').removeClass('is-invalid');
+      if(!city){$('#id_city').addClass('is-invalid');ok=false;}else $('#id_city').removeClass('is-invalid');
+      if(!addr){$('#id_address').addClass('is-invalid');ok=false;}else $('#id_address').removeClass('is-invalid');
+    }
+
+    if(!ok){
+      if(!name||!phone)showMsg("Ism va telefon raqamni kiriting",'danger');
+      return;
+    }
+
+    $('#submitBtn').prop('disabled',true).html('<i class="fas fa-spinner fa-spin"></i> Yuborilmoqda...');
+    form.submit();
+  });
+
+  $('#id_phone').on('input',function(){
+    this.value=this.value.replace(/[^0-9+]/g,'');
+    if(this.value.length>0&&!this.value.startsWith('+998'))this.value='+998'+this.value.replace(/^\+/,'');
+    if(this.value.length>13)this.value=this.value.slice(0,13);
+  });
+  $('#id_phone').on('blur',function(){
+    if(this.value&&!/^\+998\d{9}$/.test(this.value))$(this).addClass('is-invalid');
+    else $(this).removeClass('is-invalid');
+  });
+
+});
+</script>
+{% endblock %}

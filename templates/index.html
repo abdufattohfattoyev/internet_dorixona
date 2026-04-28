@@ -1,0 +1,381 @@
+{% extends 'base.html' %}
+{% block title %}Bosh sahifa — vitagum-gummy.uz | Online Dorixona{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ═══════════════════════════════════════
+   MAIN WRAP
+═══════════════════════════════════════ */
+.main-wrap{max-width:1440px;margin:0 auto;padding:16px 12px 100px;}
+@media(min-width:480px){.main-wrap{padding:20px 16px 100px;}}
+@media(min-width:768px){.main-wrap{padding:28px 28px 120px;}}
+
+/* ═══ STATS ROW ═══ */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;}
+@media(max-width:639px){.stats-row{grid-template-columns:repeat(2,1fr);}}
+.stat-card{
+  background:#fff;border-radius:14px;border:1px solid #e2e8f0;
+  padding:10px 8px;display:flex;align-items:center;gap:8px;
+  transition:box-shadow .2s,border-color .2s;min-width:0;overflow:hidden;
+}
+@media(min-width:400px){.stat-card{padding:12px;gap:10px;}}
+.stat-ico{width:34px;height:34px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.82rem;}
+@media(min-width:400px){.stat-ico{width:38px;height:38px;font-size:.9rem;}}
+.stat-ico.g{background:#dcfce7;color:#16a34a;}
+.stat-ico.b{background:#e0f2fe;color:#0369a1;}
+.stat-ico.a{background:#fffbeb;color:#d97706;}
+.stat-ico.r{background:#fef2f2;color:#dc2626;}
+.stat-txt{min-width:0;overflow:hidden;}
+.stat-val{font-size:.88rem;font-weight:900;color:#0f172a;letter-spacing:-.3px;line-height:1;}
+@media(min-width:400px){.stat-val{font-size:1rem;}}
+.stat-lbl{font-size:.62rem;color:#94a3b8;font-weight:500;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;}
+@media(min-width:768px){.stat-val{font-size:1.2rem;}.stat-lbl{font-size:.72rem;}.stat-card{padding:16px;gap:14px;}.stat-ico{width:44px;height:44px;font-size:1rem;border-radius:12px;}}
+
+/* ═══ SECTION HEAD ═══ */
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:8px;}
+.sec-head-l{display:flex;align-items:center;gap:8px;min-width:0;}
+.sec-dot{width:4px;height:18px;border-radius:4px;background:linear-gradient(to bottom,#16a34a,#0ea5e9);flex-shrink:0;}
+.sec-head h2{font-size:.9rem;font-weight:800;color:#0f172a;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+@media(min-width:480px){.sec-head h2{font-size:.97rem;}}
+.sec-count{font-size:.72rem;font-weight:600;color:#94a3b8;background:#f1f5f9;border:1px solid #e2e8f0;padding:2px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
+
+/* ═══ SEARCH BANNER ═══ */
+.search-banner{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 14px;background:#f0fdf4;border-radius:14px;
+  border:1px solid rgba(22,163,74,.2);margin-bottom:14px;
+  font-size:.82rem;font-weight:600;color:#15803d;min-width:0;
+}
+.search-banner>i{flex-shrink:0;}
+.search-banner .q{font-weight:800;}
+.s-clear-link{margin-left:auto;font-size:.72rem;color:#94a3b8;display:flex;align-items:center;gap:4px;padding:4px 8px;border-radius:8px;transition:all .15s;text-decoration:none;flex-shrink:0;white-space:nowrap;}
+.s-clear-link:hover{color:#ef4444;background:#fef2f2;}
+
+/* ═══ PRODUCT GRID ═══ */
+@keyframes cardIn{from{opacity:0;transform:translateY(16px) scale(.97);}to{opacity:1;transform:none;}}
+.pgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+@media(min-width:480px){.pgrid{grid-template-columns:repeat(3,1fr);gap:12px;}}
+@media(min-width:768px){.pgrid{grid-template-columns:repeat(4,1fr);gap:16px;}}
+@media(min-width:1100px){.pgrid{grid-template-columns:repeat(5,1fr);gap:16px;}}
+
+/* Product Card */
+.pc{
+  background:#fff;border-radius:16px;overflow:hidden;
+  display:flex;flex-direction:column;
+  border:1px solid #e2e8f0;
+  transition:box-shadow .24s,transform .24s,border-color .24s;
+  animation:cardIn .35s cubic-bezier(.22,1,.36,1) both;
+  position:relative;
+}
+@media(min-width:768px){.pc{border-radius:20px;}}
+.pc:hover{box-shadow:0 8px 28px rgba(0,0,0,.1);transform:translateY(-4px);border-color:rgba(22,163,74,.22);}
+@media(hover:none){.pc:hover{transform:none;box-shadow:none;}}
+.pgrid .pc:nth-child(1){animation-delay:.03s}
+.pgrid .pc:nth-child(2){animation-delay:.06s}
+.pgrid .pc:nth-child(3){animation-delay:.09s}
+.pgrid .pc:nth-child(4){animation-delay:.12s}
+.pgrid .pc:nth-child(5){animation-delay:.15s}
+.pgrid .pc:nth-child(n+6){animation-delay:.18s}
+
+.pc-img{
+  position:relative;padding-top:70%;
+  background:linear-gradient(145deg,#f8fafc,#f1f5f9);
+  overflow:hidden;border-bottom:1px solid #f1f5f9;
+}
+.pc-img a{position:absolute;inset:0;z-index:1;}
+.pc-img img{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:contain;padding:10px;
+  transition:transform .4s cubic-bezier(.22,1,.36,1);
+}
+.pc:hover .pc-img img{transform:scale(1.07);}
+.pc-no-img{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.4rem;
+}
+.pc-body{padding:10px 11px 11px;display:flex;flex-direction:column;flex:1;gap:3px;}
+@media(min-width:480px){.pc-body{padding:12px 13px 13px;gap:4px;}}
+.pc-name{
+  font-size:.79rem;font-weight:700;color:#0f172a;line-height:1.4;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+  overflow:hidden;min-height:2.24em;
+}
+@media(min-width:480px){.pc-name{font-size:.83rem;min-height:2.36em;}}
+.pc-cat{
+  display:inline-flex;align-items:center;gap:3px;
+  font-size:.65rem;font-weight:600;color:#94a3b8;margin-bottom:1px;
+}
+.pc-cat i{font-size:.58rem;}
+.pc-price{font-size:.88rem;font-weight:900;color:#16a34a;letter-spacing:-.2px;margin-top:2px;}
+@media(min-width:480px){.pc-price{font-size:.96rem;}}
+.pc-actions{display:flex;gap:6px;margin-top:auto;padding-top:7px;}
+.btn-eye{
+  flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+  width:34px;height:32px;border-radius:8px;
+  background:#f8fafc;color:#94a3b8;
+  border:1px solid #e2e8f0;transition:all .18s;text-decoration:none;font-size:.78rem;
+}
+.btn-eye:hover{color:#0ea5e9;background:#e0f2fe;border-color:rgba(14,165,233,.3);}
+.btn-cart{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:5px;
+  padding:8px 6px;border-radius:8px;
+  font-size:.72rem;font-weight:700;border:1.5px solid transparent;
+  background:#16a34a;color:#fff;
+  transition:all .18s;cursor:pointer;font-family:var(--font);white-space:nowrap;
+}
+@media(min-width:480px){.btn-cart{font-size:.76rem;gap:6px;padding:8px 8px;}}
+.btn-cart:hover{background:#15803d;transform:translateY(-1px);box-shadow:0 4px 14px rgba(22,163,74,.3);}
+.btn-cart:active{transform:scale(.96);}
+.btn-cart.added{background:#dcfce7;color:#16a34a;border-color:rgba(22,163,74,.3);}
+.btn-cart.added:hover{background:#fef2f2;color:#ef4444;border-color:rgba(239,68,68,.25);}
+.btn-cart:disabled{opacity:.7;cursor:default;transform:none;box-shadow:none;}
+
+/* ═══ EMPTY STATE ═══ */
+.empty-state{
+  grid-column:1/-1;text-align:center;padding:48px 20px;
+  background:#fff;border-radius:16px;border:2px dashed #e2e8f0;
+}
+@media(min-width:480px){.empty-state{padding:72px 24px;border-radius:20px;}}
+.empty-state-ico{font-size:2.6rem;margin-bottom:12px;}
+@media(min-width:480px){.empty-state-ico{font-size:3rem;margin-bottom:14px;}}
+.empty-state h5{font-size:.95rem;font-weight:800;color:#0f172a;margin-bottom:6px;}
+.empty-state p{font-size:.84rem;color:#94a3b8;margin:0;}
+
+/* ═══ PAGINATION ═══ */
+.pg-wrap{display:flex;justify-content:center;flex-wrap:wrap;gap:4px;margin-top:28px;}
+@media(min-width:480px){.pg-wrap{gap:5px;margin-top:36px;}}
+.pg-wrap .page-link{
+  width:36px!important;height:36px!important;border-radius:8px!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  font-size:.8rem!important;font-weight:600!important;padding:0!important;
+  border:1px solid #e2e8f0!important;color:#475569!important;
+  background:#fff!important;transition:all .18s!important;
+}
+@media(min-width:480px){.pg-wrap .page-link{width:38px!important;height:38px!important;font-size:.82rem!important;}}
+.pg-wrap .page-link:hover{background:#f0fdf4!important;color:#16a34a!important;border-color:rgba(22,163,74,.3)!important;}
+.pg-wrap .page-item.active .page-link{background:#16a34a!important;border-color:#16a34a!important;color:#fff!important;box-shadow:0 3px 10px rgba(22,163,74,.3)!important;}
+
+/* ═══ ORDER BAR ═══ */
+.order-bar{
+  position:fixed;bottom:0;left:0;right:0;z-index:998;
+  padding:10px 14px 12px;background:#fff;
+  border-top:1px solid #e2e8f0;
+  box-shadow:0 -4px 32px rgba(0,0,0,.1);
+  display:none;
+}
+@supports(padding-bottom:env(safe-area-inset-bottom)){
+  .order-bar{padding-bottom:calc(12px + env(safe-area-inset-bottom));}
+}
+.ob-inner{max-width:520px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.ob-info{display:flex;align-items:center;gap:10px;min-width:0;}
+.ob-ico{width:40px;height:40px;border-radius:14px;background:#dcfce7;display:flex;align-items:center;justify-content:center;color:#16a34a;font-size:15px;flex-shrink:0;}
+@media(min-width:480px){.ob-ico{width:44px;height:44px;font-size:17px;border-radius:16px;}}
+.ob-lbl{font-size:.68rem;color:#94a3b8;font-weight:500;}
+.ob-count{font-size:.88rem;font-weight:800;color:#0f172a;margin-top:1px;}
+@media(min-width:480px){.ob-count{font-size:.95rem;}}
+.ob-price{font-size:.7rem;color:#16a34a;font-weight:700;}
+.ob-btn{
+  display:flex;align-items:center;gap:7px;padding:11px 18px;border-radius:12px;
+  font-weight:700;font-size:.82rem;
+  background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;
+  text-decoration:none;transition:all .18s;flex-shrink:0;
+  box-shadow:0 4px 14px rgba(22,163,74,.3);white-space:nowrap;
+}
+@media(min-width:480px){.ob-btn{padding:12px 24px;font-size:.88rem;gap:9px;}}
+.ob-btn:hover{background:linear-gradient(135deg,#15803d,#166534);color:#fff;transform:translateY(-1px);}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-wrap">
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-ico g"><i class="fas fa-pills"></i></div>
+      <div class="stat-txt"><div class="stat-val">5,000+</div><span class="stat-lbl">Dori nomi</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-ico b"><i class="fas fa-truck"></i></div>
+      <div class="stat-txt"><div class="stat-val">24/7</div><span class="stat-lbl">Yetkazib berish</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-ico a"><i class="fas fa-shield-alt"></i></div>
+      <div class="stat-txt"><div class="stat-val">100%</div><span class="stat-lbl">Asl mahsulot</span></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-ico r"><i class="fas fa-users"></i></div>
+      <div class="stat-txt"><div class="stat-val">50K+</div><span class="stat-lbl">Mijozlar</span></div>
+    </div>
+  </div>
+
+  <!-- SECTION HEADER -->
+  <div class="sec-head" id="products">
+    <div class="sec-head-l">
+      <div class="sec-dot"></div>
+      <h2>{% if request.GET.q %}"{{ request.GET.q }}" natijalari{% else %}Barcha dorilar{% endif %}</h2>
+    </div>
+    <span class="sec-count">{{ products.paginator.count }} ta</span>
+  </div>
+
+  <!-- SEARCH BANNER -->
+  {% if request.GET.q %}
+  <div class="search-banner">
+    <i class="fas fa-search"></i>
+    "<span class="q">{{ request.GET.q }}</span>" bo'yicha qidiruv natijalari
+    <a href="{% url 'home' %}" class="s-clear-link"><i class="fas fa-times"></i> Tozalash</a>
+  </div>
+  {% endif %}
+
+  <!-- PRODUCT GRID -->
+  <div class="pgrid">
+    {% for product in products %}
+    <div class="pc">
+      <div class="pc-img">
+        <a href="{% url 'product_detail' product.slug %}"></a>
+        {% with primary_image=product.get_primary_image %}
+          {% if primary_image and primary_image.image %}
+            <img src="{{ primary_image.image.url }}" alt="{{ product.name }}" loading="lazy">
+          {% else %}
+            <div class="pc-no-img">💊</div>
+          {% endif %}
+        {% endwith %}
+      </div>
+      <div class="pc-body">
+        <div class="pc-cat"><i class="fas fa-tag"></i>{{ product.category.name }}</div>
+        <div class="pc-name">{{ product.name }}</div>
+        <div class="pc-price">{{ product.price|floatformat:0 }} so'm</div>
+        <div class="pc-actions">
+          <a href="{% url 'product_detail' product.slug %}" class="btn-eye" title="Batafsil">
+            <i class="fas fa-eye"></i>
+          </a>
+          <form class="add-to-cart-form" data-product-id="{{ product.id }}" style="flex:1;display:flex;">
+            {% csrf_token %}
+            <button type="submit"
+              class="btn-cart {% if product in cart_products %}added{% endif %}"
+              {% if product in cart_products %}disabled{% endif %}>
+              <i class="fas {% if product in cart_products %}fa-check{% else %}fa-cart-plus{% endif %}"></i>
+              <span>{% if product in cart_products %}Qo'shildi{% else %}Savatga{% endif %}</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="empty-state">
+      <div class="empty-state-ico">🔍</div>
+      <h5>Natija topilmadi</h5>
+      <p>Boshqa kalit so'z kiriting yoki kategoriyani o'zgartiring</p>
+    </div>
+    {% endfor %}
+  </div>
+
+
+  <!-- PAGINATION -->
+  {% if products.paginator.num_pages > 1 %}
+  <nav class="mt-2" aria-label="Sahifalar">
+    <ul class="pagination pg-wrap">
+      {% if products.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ products.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+          <i class="fas fa-chevron-left" style="font-size:.68rem"></i>
+        </a>
+      </li>
+      {% else %}
+      <li class="page-item disabled"><span class="page-link"><i class="fas fa-chevron-left" style="font-size:.68rem"></i></span></li>
+      {% endif %}
+
+      {% for num in products.paginator.page_range %}
+        {% if products.number == num %}
+        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+        {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a>
+        </li>
+        {% endif %}
+      {% endfor %}
+
+      {% if products.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?page={{ products.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+          <i class="fas fa-chevron-right" style="font-size:.68rem"></i>
+        </a>
+      </li>
+      {% else %}
+      <li class="page-item disabled"><span class="page-link"><i class="fas fa-chevron-right" style="font-size:.68rem"></i></span></li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+
+</div>
+
+<!-- ORDER BAR -->
+<div class="order-bar" id="orderBar" {% if cart_count and cart_count > 0 %}style="display:block"{% endif %}>
+  <div class="ob-inner">
+    <div class="ob-info">
+      <div class="ob-ico"><i class="fas fa-shopping-bag"></i></div>
+      <div>
+        <div class="ob-lbl">Savatda</div>
+        <div class="ob-count"><span id="obCount">{{ cart_count }}</span> ta mahsulot</div>
+        <div class="ob-price" id="obPrice"></div>
+      </div>
+    </div>
+    <a href="{% url 'cart_detail' %}" class="ob-btn">
+      <i class="fas fa-shopping-cart"></i>Buyurtma berish
+    </a>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function(){
+
+  /* ═══ ADD TO CART ═══ */
+  $('.add-to-cart-form').on('submit', function(e){
+    e.preventDefault();
+    const form = $(this);
+    const productId = form.data('product-id');
+    const btn  = form.find('.btn-cart');
+    const origHtml = btn.html();
+
+    btn.html('<span class="spinner-border spinner-border-sm" role="status"></span>').prop('disabled', true);
+
+    $.ajax({
+      url: `/cart/add/${productId}/`,
+      method: 'POST',
+      data: {quantity:1, csrfmiddlewaretoken:'{{ csrf_token }}'},
+      success: function(res){
+        const count = res.cart_count;
+
+        bumpCartDot(count);
+        const obCount = document.getElementById('obCount');
+        if (obCount) obCount.textContent = count;
+
+        if(res.already_in_cart){
+          showToast('Bu mahsulot allaqachon savatda!','info');
+          btn.html(origHtml).prop('disabled', false);
+        } else {
+          showToast("Savatga qo'shildi ✓",'success');
+          btn.html('<i class="fas fa-check"></i><span>Qo\'shildi</span>')
+             .addClass('added').prop('disabled', true);
+        }
+      },
+      error: function(xhr){
+        showToast("Xatolik yuz berdi, qayta urining",'danger');
+        btn.html(origHtml).prop('disabled', false);
+      }
+    });
+  });
+
+  const initCount = parseInt('{{ cart_count|default:0 }}');
+  if(initCount > 0){
+    const bar = document.getElementById('orderBar');
+    if (bar) bar.style.display = 'block';
+  }
+
+});
+</script>
+{% endblock %}

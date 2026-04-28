@@ -1,0 +1,502 @@
+{% extends 'base.html' %}
+
+{% block title %}Savat - vitagum-gummy.uz{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Mobile-first styles */
+    .cart-container {
+        padding: 15px;
+        padding-bottom: 120px;
+    }
+
+    .cart-item-card {
+        border: 1px solid #eee;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+        background: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        transition: transform 0.2s ease;
+    }
+
+    .cart-item-card:hover {
+        transform: translateY(-2px);
+    }
+
+    .product-info {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+    .product-image-container {
+        width: 70px;
+        height: 70px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-right: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .product-image {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    .product-name {
+        font-weight: 600;
+        font-size: 1.1rem;
+        flex-grow: 1;
+        color: #333;
+    }
+
+    .price-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .price-label {
+        color: #666;
+        font-size: 0.95rem;
+    }
+
+    .price-value {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .quantity-control {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 15px 0;
+    }
+
+    .quantity-buttons {
+        display: flex;
+        align-items: center;
+    }
+
+    .quantity-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        background-color: #f8f9fa;
+        border: 1px solid #ddd;
+        transition: background-color 0.2s ease;
+    }
+
+    .quantity-btn:hover {
+        background-color: #e9ecef;
+    }
+
+    .quantity-input {
+        width: 60px;
+        text-align: center;
+        margin: 0 10px;
+        font-weight: 600;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+    }
+
+    .remove-btn {
+        color: #dc3545;
+        background: none;
+        border: none;
+        padding: 8px 0;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        transition: color 0.2s ease;
+    }
+
+    .remove-btn:hover {
+        color: #b02a37;
+    }
+
+    .cart-actions {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        padding: 15px;
+        box-shadow: 0 -2px 15px rgba(0,0,0,0.1);
+        z-index: 1000;
+        border-top: 1px solid #eee;
+    }
+
+    .total-price {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+
+    /* Toast notification */
+    .update-toast {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: white;
+        padding: 10px 25px;
+        border-radius: 30px;
+        box-shadow: 0 3px 15px rgba(0,0,0,0.2);
+        z-index: 1100;
+        display: none;
+        font-weight: 500;
+        animation: fadeInOut 3s ease-in-out;
+    }
+
+    @keyframes fadeInOut {
+        0% { opacity: 0; top: 10px; }
+        10% { opacity: 1; top: 20px; }
+        90% { opacity: 1; top: 20px; }
+        100% { opacity: 0; top: 10px; }
+    }
+
+    /* Loading state */
+    .updating {
+        position: relative;
+        opacity: 0.7;
+        pointer-events: none;
+    }
+
+    .updating:after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 24px;
+        height: 24px;
+        border: 3px solid var(--primary);
+        border-top: 3px solid transparent;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        transform: translate(-50%, -50%);
+    }
+
+    @keyframes spin {
+        0% { transform: translate(-50%, -50%) rotate(0deg); }
+        100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    /* Empty cart */
+    .empty-cart {
+        text-align: center;
+        padding: 40px 20px;
+    }
+
+    .empty-cart i {
+        font-size: 4rem;
+        color: #ddd;
+        margin-bottom: 20px;
+    }
+
+    /* Modal styles */
+    .modal-content {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+
+    .modal-header {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .modal-title {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .modal-body {
+        font-size: 1rem;
+        color: #555;
+    }
+
+    .modal-footer {
+        border-top: none;
+        padding-top: 0;
+    }
+
+    /* Desktop styles */
+    @media (min-width: 768px) {
+        .cart-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding-bottom: 30px;
+        }
+
+        .cart-actions {
+            position: static;
+            background: transparent;
+            padding: 20px 0;
+            box-shadow: none;
+            border-top: none;
+            margin-top: 30px;
+        }
+
+        .cart-item-card {
+            padding: 20px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cart-container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="mb-0"><i class="fas fa-shopping-cart me-2"></i>Savat</h3>
+        <span class="badge bg-primary rounded-pill px-3 py-2" id="cart-count">{{ cart.cartitem_set.count }} ta</span>
+    </div>
+
+    <!-- Toast notification -->
+    <div class="update-toast" id="update-toast"></div>
+
+    {% if cart.cartitem_set.all %}
+        <div id="cart-items">
+            {% for item in cart.cartitem_set.all %}
+            <div class="cart-item-card" data-item-id="{{ item.id }}">
+                <div class="product-info">
+                    <div class="product-image-container">
+                        {% with primary_image=item.product.get_primary_image %}
+                            {% if primary_image %}
+                                <img src="{{ primary_image.image.url }}" alt="{{ item.product.name }}" class="product-image">
+                            {% else %}
+                                <img src="/static/images/no-image.png" alt="Rasm mavjud emas" class="product-image">
+                            {% endif %}
+                        {% endwith %}
+                    </div>
+                    <span class="product-name">{{ item.product.name }}</span>
+                </div>
+
+                <div class="price-row">
+                    <span class="price-label">Narxi:</span>
+                    <span class="price-value unit-price">{{ item.product.price|floatformat:"0" }} so'm</span>
+                </div>
+
+                <div class="quantity-control">
+                    <span class="price-label">Soni:</span>
+                    <div class="quantity-buttons">
+                        <button class="quantity-btn quantity-decrease" data-item-id="{{ item.id }}">-</button>
+                        <input type="number" class="form-control quantity-input" value="{{ item.quantity }}" min="1" data-item-id="{{ item.id }}">
+                        <button class="quantity-btn quantity-increase" data-item-id="{{ item.id }}">+</button>
+                    </div>
+                </div>
+
+                <div class="price-row">
+                    <span class="price-label">Jami:</span>
+                    <span class="price-value item-total">{{ item.get_total_price|floatformat:"0" }} so'm</span>
+                </div>
+
+                <div class="text-end mt-2">
+                    <button class="remove-btn" data-item-id="{{ item.id }}" data-bs-toggle="modal" data-bs-target="#removeConfirmModal">
+                        <i class="fas fa-trash-alt"></i> O'chirish
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="cart-actions">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="mb-0">Umumiy summa:</h4>
+                <h3 class="mb-0 total-price" id="cart-total">{{ cart.get_total_price|floatformat:"0" }} so'm</h3>
+            </div>
+
+            <div class="d-grid gap-3">
+                <a href="{% url 'checkout' %}" class="btn btn-success btn-lg py-3">
+                    <i class="fas fa-credit-card me-2"></i> Buyurtma berish
+                </a>
+                <a href="{% url 'home' %}" class="btn btn-outline-primary py-2">
+                    <i class="fas fa-arrow-left me-2"></i> Dorixonaga qaytish
+                </a>
+            </div>
+        </div>
+    {% else %}
+        <div class="empty-cart">
+            <i class="fas fa-shopping-cart"></i>
+            <h4 class="mb-3">Savat bo'sh</h4>
+            <p class="text-muted mb-4">Siz hali hech qanday dori qo'shmagansiz</p>
+            <a href="{% url 'home' %}" class="btn btn-primary btn-lg px-4">
+                <i class="fas fa-pills me-2"></i> Dorixonaga o'tish
+            </a>
+        </div>
+    {% endif %}
+
+    <!-- Remove Confirmation Modal -->
+    <div class="modal fade" id="removeConfirmModal" tabindex="-1" aria-labelledby="removeConfirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="removeConfirmModalLabel">Mahsulotni o'chirish</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Ushbu mahsulotni savatdan o'chirishni xohlaysizmi?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Yo'q</button>
+                    <button type="button" class="btn btn-danger" id="confirmRemoveBtn">Ha, o'chirish</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    let currentItemId = null;
+
+    // Format price with commas
+    function formatPrice(price) {
+        return new Intl.NumberFormat('uz-UZ').format(Math.round(parseFloat(price))) + " so'm";
+    }
+
+    // Show toast notification
+    function showToast(message, type = 'success') {
+        const toast = $('#update-toast');
+        toast.removeClass('bg-success bg-danger bg-info').addClass(`bg-${type}`);
+        toast.text(message).fadeIn(300);
+        setTimeout(() => toast.fadeOut(300), 3000);
+    }
+
+    // Update cart item
+    function updateCartItem(input) {
+        const itemId = input.data('item-id');
+        const quantity = parseInt(input.val());
+        const itemCard = input.closest('.cart-item-card');
+
+        // Validate input
+        if (isNaN(quantity) || quantity < 1) {
+            input.val(input.data('old-value'));
+            showToast('Soni kamida 1 bo\'lishi kerak', 'danger');
+            return;
+        }
+
+        // Show loading state
+        input.prop('disabled', true);
+        itemCard.addClass('updating');
+
+        $.ajax({
+            url: `/cart/update/${itemId}/`,
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            data: { quantity: quantity },
+            success: function(response) {
+                if (response.success) {
+                    // Update UI
+                    itemCard.find('.item-total').text(formatPrice(response.item_total));
+                    $('#cart-total').text(formatPrice(response.cart_total));
+                    $('#cart-count').text(response.cart_count + ' ta');
+                    input.data('old-value', quantity);
+                    showToast('Savat yangilandi!', 'success');
+                } else {
+                    throw new Error(response.message || 'Invalid response');
+                }
+            },
+            error: function(xhr) {
+                const errorMsg = xhr.responseJSON?.message || 'Xatolik yuz berdi';
+                showToast(errorMsg, 'danger');
+                input.val(input.data('old-value'));
+            },
+            complete: function() {
+                input.prop('disabled', false);
+                itemCard.removeClass('updating');
+            }
+        });
+    }
+
+    // Remove cart item
+    function removeCartItem(itemId) {
+        const itemCard = $(`.cart-item-card[data-item-id="${itemId}"]`);
+        itemCard.addClass('updating');
+
+        $.ajax({
+            url: `/cart/remove/${itemId}/`,
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    itemCard.fadeOut(300, function() {
+                        $(this).remove();
+                        $('#cart-total').text(formatPrice(response.cart_total));
+                        $('#cart-count').text(response.cart_count + ' ta');
+                        showToast('Mahsulot o\'chirildi', 'success');
+                        if (response.cart_count === 0) {
+                            window.location.reload();
+                        }
+                    });
+                } else {
+                    throw new Error(response.message || 'Invalid response');
+                }
+            },
+            error: function(xhr) {
+                const errorMsg = xhr.responseJSON?.message || 'Xatolik yuz berdi';
+                showToast(errorMsg, 'danger');
+                itemCard.removeClass('updating');
+            }
+        });
+    }
+
+    // Event handlers
+    $('.quantity-increase').click(function() {
+        const input = $(this).siblings('.quantity-input');
+        input.val(parseInt(input.val()) + 1);
+        updateCartItem(input);
+    });
+
+    $('.quantity-decrease').click(function() {
+        const input = $(this).siblings('.quantity-input');
+        if (parseInt(input.val()) > 1) {
+            input.val(parseInt(input.val()) - 1);
+            updateCartItem(input);
+        }
+    });
+
+    $('.quantity-input').on('change', function() {
+        updateCartItem($(this));
+    }).each(function() {
+        $(this).data('old-value', $(this).val());
+    });
+
+    $('.remove-btn').click(function() {
+        currentItemId = $(this).data('item-id');
+    });
+
+    $('#confirmRemoveBtn').click(function() {
+        if (currentItemId) {
+            removeCartItem(currentItemId);
+            $('#removeConfirmModal').modal('hide');
+            currentItemId = null;
+        }
+    });
+
+    // Format initial prices
+    $('.unit-price, .item-total, #cart-total').each(function() {
+        const price = parseFloat($(this).text().replace(/\s+/g, '').replace('so\'m', ''));
+        if (!isNaN(price)) {
+            $(this).text(formatPrice(price));
+        }
+    });
+});
+</script>
+{% endblock %}

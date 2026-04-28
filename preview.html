@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>vitagum-gummy.uz — Online Dorixona</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+  /* ══════════════════════════════════════
+     TOKENS
+  ══════════════════════════════════════ */
+  :root {
+    --p:      #16a34a;
+    --p-d:    #15803d;
+    --p-l:    #dcfce7;
+    --p-xl:   #f0fdf4;
+    --blue:   #0ea5e9;
+    --blue-l: #e0f2fe;
+    --red:    #ef4444;
+    --amber:  #f59e0b;
+    --ink:    #0f172a;
+    --ink-2:  #1e293b;
+    --ink-3:  #475569;
+    --ink-4:  #94a3b8;
+    --ink-5:  #cbd5e1;
+    --bg:     #f8fafc;
+    --sur:    #ffffff;
+    --sur-2:  #f1f5f9;
+    --line:   #e2e8f0;
+    --line-s: #f1f5f9;
+    --r:    12px; --r-s: 8px; --r-l: 16px; --r-xl: 20px;
+    --sh-s: 0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+    --sh-m: 0 4px 16px rgba(0,0,0,.08),0 2px 6px rgba(0,0,0,.04);
+    --sh-l: 0 16px 48px rgba(0,0,0,.12),0 4px 12px rgba(0,0,0,.05);
+    --t:    all .18s cubic-bezier(.4,0,.2,1);
+    --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+    --hh:   112px;
+  }
+  @media(max-width:639px){:root{--hh:156px;}}
+
+  *,*::before,*::after{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:var(--font);
+    background:var(--bg);
+    color:var(--ink);
+    margin:0;
+    padding-top:var(--hh);
+    padding-bottom:88px;
+    -webkit-font-smoothing:antialiased;
+  }
+  @supports(padding-bottom:env(safe-area-inset-bottom)){
+    body{padding-bottom:calc(88px + env(safe-area-inset-bottom));}
+  }
+  a{text-decoration:none;color:inherit;}
+  img{display:block;max-width:100%;}
+  button{font-family:var(--font);cursor:pointer;}
+
+  /* ══ HEADER ══ */
+  .site-header{
+    position:fixed;top:0;left:0;right:0;z-index:900;
+    background:var(--sur);
+    border-bottom:1px solid var(--line);
+    box-shadow:0 1px 0 var(--line),0 2px 20px rgba(0,0,0,.05);
+  }
+
+  .top-bar{
+    display:flex;align-items:center;flex-wrap:wrap;
+    gap:8px;padding:10px 16px;
+    max-width:1400px;margin:0 auto;
+  }
+  @media(min-width:768px){.top-bar{padding:10px 24px;gap:12px;}}
+
+  /* Brand */
+  .brand{display:flex;align-items:center;gap:9px;flex-shrink:0;text-decoration:none;}
+  .brand-icon{
+    width:38px;height:38px;border-radius:11px;
+    background:linear-gradient(135deg,#16a34a,#0ea5e9);
+    display:flex;align-items:center;justify-content:center;
+    font-size:16px;color:#fff;
+    box-shadow:0 2px 10px rgba(22,163,74,.3);flex-shrink:0;
+  }
+  .brand-name{font-size:1.05rem;font-weight:800;color:var(--ink);letter-spacing:-.5px;white-space:nowrap;}
+  .brand-do{color:var(--p);}
+  .brand-ri{color:var(--blue);}
+  .brand-xt{color:var(--ink-3);}
+  .brand-dot{color:var(--ink-4);font-weight:600;}
+
+  /* Search */
+  .search-wrap{
+    display:flex;align-items:center;
+    background:var(--bg);border:1.5px solid var(--line);
+    border-radius:var(--r);overflow:hidden;
+    transition:border-color .15s,box-shadow .15s;
+    order:10;flex:0 0 100%;
+  }
+  @media(min-width:640px){.search-wrap{order:0;flex:1 1 auto;max-width:600px;}}
+  .search-wrap:focus-within{border-color:var(--p);box-shadow:0 0 0 3px rgba(22,163,74,.12);background:var(--sur);}
+  .s-ico{padding:0 10px 0 14px;color:var(--ink-4);font-size:.85rem;flex-shrink:0;}
+  .search-wrap input{
+    flex:1;border:none;background:transparent;
+    padding:10px 4px;font-size:.88rem;font-family:var(--font);
+    color:var(--ink);outline:none;min-width:0;
+  }
+  .search-wrap input::placeholder{color:var(--ink-4);}
+  .s-btn{
+    padding:10px 18px;background:var(--p);color:#fff;
+    border:none;font-size:.8rem;font-weight:700;font-family:var(--font);
+    flex-shrink:0;transition:background .15s;white-space:nowrap;min-height:40px;
+  }
+  .s-btn:hover{background:var(--p-d);}
+
+  /* Actions */
+  .hdr-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:auto;}
+  @media(min-width:640px){.hdr-actions{margin-left:0;}}
+
+  .hdr-btn{
+    position:relative;width:40px;height:40px;border-radius:var(--r);
+    background:var(--bg);border:1.5px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    font-size:15px;color:var(--ink-3);transition:var(--t);
+    text-decoration:none;
+  }
+  .hdr-btn:hover{background:var(--p-xl);border-color:var(--p);color:var(--p);}
+  .cart-badge{
+    position:absolute;top:-6px;right:-6px;
+    min-width:18px;height:18px;padding:0 4px;
+    border-radius:20px;background:var(--p);color:#fff;
+    font-size:.6rem;font-weight:800;
+    display:flex;align-items:center;justify-content:center;
+    border:2px solid var(--sur);transition:transform .2s;
+  }
+  .cart-badge.hidden{display:none!important;}
+  .cart-badge.bump{transform:scale(1.5);}
+
+  /* Contact dropdown */
+  .c-menu{
+    border:1px solid var(--line)!important;border-radius:var(--r-l)!important;
+    box-shadow:var(--sh-l)!important;padding:6px!important;min-width:220px;
+  }
+  .c-link{
+    display:flex;align-items:center;gap:9px;
+    padding:9px 12px;border-radius:var(--r-s);
+    font-size:.85rem;font-weight:600;color:var(--ink-2);transition:background .12s;
+  }
+  .c-link:hover{background:var(--bg);color:var(--ink);}
+  .c-link i{width:16px;text-align:center;color:var(--ink-4);font-size:.82rem;}
+  .c-link span.tel-num{color:var(--p);font-weight:700;}
+
+  /* Rx badge (prescription indicator) */
+  .rx-chip{
+    display:inline-flex;align-items:center;gap:4px;
+    padding:2px 8px;border-radius:20px;
+    font-size:.65rem;font-weight:800;letter-spacing:.3px;
+    text-transform:uppercase;
+  }
+  .rx-chip.rx{background:#fef2f2;color:#dc2626;border:1px solid #fecaca;}
+  .rx-chip.otc{background:var(--p-l);color:var(--p-d);border:1px solid rgba(22,163,74,.3);}
+  .rx-chip.vita{background:var(--blue-l);color:#0369a1;border:1px solid #bae6fd;}
+
+  /* ══ CATEGORY BAR ══ */
+  .cat-bar{
+    border-top:1px solid var(--line-s);background:var(--sur);
+  }
+  .cat-trigger{
+    display:flex;align-items:center;gap:10px;
+    width:100%;padding:0 16px;height:44px;
+    background:var(--sur);border:none;cursor:pointer;font-family:var(--font);
+  }
+  .ct-icon{
+    width:28px;height:28px;border-radius:8px;
+    background:var(--p-l);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--p);font-size:.78rem;flex-shrink:0;transition:var(--t);
+  }
+  .ct-label{flex:1;text-align:left;font-size:.83rem;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .ct-count{font-size:.72rem;font-weight:600;color:var(--ink-4);background:var(--sur-2);border:1px solid var(--line);padding:2px 9px;border-radius:20px;flex-shrink:0;}
+  .ct-chev{color:var(--ink-4);font-size:.75rem;flex-shrink:0;transition:transform .25s;}
+  .cat-trigger.open .ct-chev{transform:rotate(180deg);}
+  .cat-trigger.open .ct-icon{background:var(--p);color:#fff;}
+  @media(min-width:640px){.cat-trigger{display:none;}}
+
+  .cat-inner{
+    display:none;align-items:center;
+    max-width:1400px;margin:0 auto;padding:0 16px;gap:2px;
+  }
+  @media(min-width:640px){.cat-inner{display:flex;}}
+  @media(min-width:768px){.cat-inner{padding:0 24px;}}
+
+  .cat-nav{
+    width:28px;height:28px;flex-shrink:0;border-radius:50%;
+    border:1.5px solid var(--line);background:var(--sur);
+    color:var(--ink-3);font-size:.7rem;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;transition:var(--t);
+  }
+  .cat-nav:hover{border-color:var(--p);color:var(--p);background:var(--p-xl);}
+  .cat-nav:disabled{opacity:.3;pointer-events:none;}
+
+  .cat-scr-wrap{flex:1;position:relative;overflow:hidden;}
+  .fade-l,.fade-r{position:absolute;top:0;bottom:0;width:28px;z-index:1;pointer-events:none;}
+  .fade-l{left:0;background:linear-gradient(to right,var(--sur),transparent);}
+  .fade-r{right:0;background:linear-gradient(to left,var(--sur),transparent);}
+
+  .cat-scroller{
+    display:flex;gap:3px;overflow-x:auto;padding:7px 0;
+    scrollbar-width:none;scroll-behavior:smooth;
+  }
+  .cat-scroller::-webkit-scrollbar{display:none;}
+
+  .cat-pill{
+    display:inline-flex;align-items:center;gap:5px;
+    padding:5px 13px;border-radius:20px;
+    font-size:.79rem;font-weight:600;color:var(--ink-3);
+    background:transparent;border:1.5px solid transparent;
+    white-space:nowrap;transition:var(--t);flex-shrink:0;text-decoration:none;
+  }
+  .cat-pill:hover{color:var(--p);background:var(--p-xl);border-color:rgba(22,163,74,.2);}
+  .cat-pill.active{color:var(--p);background:var(--p-l);border-color:rgba(22,163,74,.35);font-weight:700;}
+  .cat-pill i{font-size:.72rem;opacity:.7;}
+
+  /* ══ MOBILE DRAWER ══ */
+  .cat-overlay{
+    display:none;position:fixed;inset:0;z-index:1050;
+    background:rgba(15,23,42,.55);backdrop-filter:blur(2px);
+    opacity:0;transition:opacity .3s ease;
+  }
+  .cat-overlay.show{display:block;}
+  .cat-overlay.visible{opacity:1;}
+  .cat-drawer{
+    position:fixed;bottom:0;left:0;right:0;z-index:1051;
+    background:var(--sur);border-radius:22px 22px 0 0;max-height:82vh;
+    display:flex;flex-direction:column;
+    transform:translateY(100%);transition:transform .34s cubic-bezier(.32,0,.67,0);
+    will-change:transform;
+  }
+  @supports(padding-bottom:env(safe-area-inset-bottom)){
+    .cat-drawer{padding-bottom:env(safe-area-inset-bottom);}
+  }
+  .cat-drawer.open{transform:translateY(0);transition-timing-function:cubic-bezier(.33,1,.68,1);}
+  .drawer-handle{width:36px;height:4px;border-radius:4px;background:var(--ink-5);margin:12px auto 0;flex-shrink:0;}
+  .drawer-head{display:flex;align-items:center;justify-content:space-between;padding:14px 20px 12px;flex-shrink:0;border-bottom:1px solid var(--line-s);}
+  .drawer-title{font-size:1rem;font-weight:800;color:var(--ink);}
+  .drawer-close{width:32px;height:32px;border-radius:50%;background:var(--sur-2);border:none;display:flex;align-items:center;justify-content:center;color:var(--ink-3);font-size:.85rem;transition:var(--t);}
+  .drawer-close:hover{background:var(--line);color:var(--ink);}
+  .drawer-list{overflow-y:auto;flex:1;padding:8px 12px 16px;scrollbar-width:thin;scrollbar-color:var(--line) transparent;}
+  .drawer-list::-webkit-scrollbar{width:4px;}
+  .drawer-list::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px;}
+  .drawer-item{
+    display:flex;align-items:center;gap:12px;
+    padding:11px 12px;border-radius:var(--r);
+    text-decoration:none;font-size:.9rem;font-weight:600;
+    color:var(--ink-2);transition:background .14s;
+    border:1.5px solid transparent;margin-bottom:3px;
+  }
+  .drawer-item:hover{background:var(--bg);}
+  .drawer-item.active{background:var(--p-l);color:var(--p);border-color:rgba(22,163,74,.3);}
+  .di-ico{width:36px;height:36px;border-radius:var(--r-s);flex-shrink:0;background:var(--sur-2);display:flex;align-items:center;justify-content:center;font-size:.82rem;color:var(--ink-4);transition:var(--t);}
+  .drawer-item.active .di-ico{background:rgba(22,163,74,.15);color:var(--p);}
+  .di-name{flex:1;}
+  .di-check{font-size:.8rem;color:var(--p);opacity:0;transition:opacity .15s;}
+  .drawer-item.active .di-check{opacity:1;}
+
+  /* ══ MAIN CONTENT ══ */
+  .main-wrap{max-width:1400px;margin:0 auto;padding:20px 16px 120px;}
+  @media(min-width:768px){.main-wrap{padding:24px 24px 120px;}}
+
+
+  /* ══ STATS ROW ══ */
+  .stats-row{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:28px;
+  }
+  @media(min-width:480px){.stats-row{gap:12px;}}
+  .stat-card{
+    background:var(--sur);border-radius:var(--r-l);border:1px solid var(--line);
+    padding:14px 16px;display:flex;flex-direction:column;gap:4px;
+    transition:var(--t);
+  }
+  .stat-card:hover{box-shadow:var(--sh-m);border-color:rgba(22,163,74,.2);}
+  .stat-ico{
+    width:32px;height:32px;border-radius:9px;margin-bottom:6px;
+    display:flex;align-items:center;justify-content:center;font-size:.85rem;
+  }
+  .stat-ico.green{background:var(--p-l);color:var(--p);}
+  .stat-ico.blue{background:var(--blue-l);color:#0369a1;}
+  .stat-ico.amber{background:#fffbeb;color:#d97706;}
+  .stat-val{font-size:1.1rem;font-weight:800;color:var(--ink);}
+  @media(min-width:480px){.stat-val{font-size:1.25rem;}}
+  .stat-lbl{font-size:.72rem;color:var(--ink-4);font-weight:600;}
+
+  /* ══ SECTION HEADER ══ */
+  .sec-head{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:16px;gap:10px;
+  }
+  .sec-head h2{font-size:.95rem;font-weight:800;color:var(--ink);margin:0;}
+  .sec-count{
+    font-size:.78rem;font-weight:600;color:var(--ink-4);
+    background:var(--sur-2);border:1px solid var(--line);
+    padding:3px 11px;border-radius:20px;white-space:nowrap;flex-shrink:0;
+  }
+  .see-all{
+    font-size:.78rem;font-weight:700;color:var(--p);
+    display:flex;align-items:center;gap:4px;transition:var(--t);
+  }
+  .see-all:hover{color:var(--p-d);}
+
+  /* ══ PRODUCT GRID ══ */
+  @keyframes cardIn{from{opacity:0;transform:translateY(14px) scale(.97);}to{opacity:1;transform:none;}}
+
+  .pgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
+  @media(min-width:480px){.pgrid{grid-template-columns:repeat(3,1fr);gap:12px;}}
+  @media(min-width:768px){.pgrid{grid-template-columns:repeat(4,1fr);gap:14px;}}
+  @media(min-width:1100px){.pgrid{grid-template-columns:repeat(5,1fr);gap:16px;}}
+
+  /* ── Product Card ── */
+  .pc{
+    background:var(--sur);border-radius:var(--r-l);overflow:hidden;
+    display:flex;flex-direction:column;
+    border:1px solid var(--line);
+    transition:box-shadow .22s,transform .22s,border-color .22s;
+    animation:cardIn .32s cubic-bezier(.22,1,.36,1) both;
+    position:relative;
+  }
+  .pc:hover{box-shadow:var(--sh-m);transform:translateY(-4px);border-color:rgba(22,163,74,.2);}
+
+  /* Discount badge */
+  .pc-badge{
+    position:absolute;top:8px;left:8px;z-index:2;
+    padding:3px 8px;border-radius:7px;
+    font-size:.65rem;font-weight:800;line-height:1;
+  }
+  .pc-badge.sale{background:#ef4444;color:#fff;}
+  .pc-badge.new{background:var(--blue);color:#fff;}
+  .pc-badge.top{background:var(--amber);color:#fff;}
+
+  /* Favorite */
+  .pc-fav{
+    position:absolute;top:8px;right:8px;z-index:2;
+    width:28px;height:28px;border-radius:50%;
+    background:rgba(255,255,255,.85);backdrop-filter:blur(4px);
+    border:none;display:flex;align-items:center;justify-content:center;
+    font-size:.78rem;color:var(--ink-4);transition:var(--t);
+    opacity:0;
+  }
+  .pc:hover .pc-fav{opacity:1;}
+  .pc-fav:hover{color:var(--red);background:#fff;}
+  .pc-fav.active{opacity:1;color:var(--red);background:#fff;}
+
+  /* Image area */
+  .pc-img{
+    position:relative;padding-top:80%;
+    background:var(--bg);overflow:hidden;
+    border-bottom:1px solid var(--line-s);
+  }
+  .pc-img a{position:absolute;inset:0;z-index:1;}
+  .pc-img-inner{
+    position:absolute;inset:0;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .med-icon{
+    width:70px;height:70px;border-radius:var(--r-l);
+    display:flex;align-items:center;justify-content:center;
+    font-size:2rem;transition:transform .38s ease;
+  }
+  .pc:hover .med-icon{transform:scale(1.08);}
+
+  /* Body */
+  .pc-body{padding:10px 12px 12px;display:flex;flex-direction:column;flex:1;gap:4px;}
+  .pc-rx{margin-bottom:2px;}
+  .pc-name{
+    font-size:.82rem;font-weight:600;color:var(--ink);line-height:1.42;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+    overflow:hidden;min-height:2.32em;
+  }
+  .pc-inn{font-size:.72rem;color:var(--ink-4);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .pc-mfr{
+    display:flex;align-items:center;gap:4px;
+    font-size:.7rem;color:var(--ink-4);font-weight:500;
+  }
+  .pc-mfr i{font-size:.6rem;}
+  .pc-price-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:2px;}
+  .pc-price{font-size:.92rem;font-weight:800;color:var(--p);letter-spacing:-.3px;}
+  .pc-old{font-size:.75rem;color:var(--ink-4);text-decoration:line-through;font-weight:500;}
+
+  /* Actions */
+  .pc-actions{display:flex;gap:6px;margin-top:auto;padding-top:7px;}
+  .btn-eye{
+    flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+    width:34px;height:32px;border-radius:var(--r-s);
+    background:var(--bg);color:var(--ink-4);
+    border:1px solid var(--line);transition:var(--t);text-decoration:none;font-size:.82rem;
+  }
+  .btn-eye:hover{color:var(--p);background:var(--p-xl);border-color:rgba(22,163,74,.3);}
+  .btn-cart{
+    flex:1;display:flex;align-items:center;justify-content:center;gap:5px;
+    padding:7px 8px;border-radius:var(--r-s);
+    font-size:.75rem;font-weight:700;border:1.5px solid transparent;
+    background:var(--p);color:#fff;
+    transition:var(--t);cursor:pointer;font-family:var(--font);white-space:nowrap;
+  }
+  .btn-cart:hover{background:var(--p-d);transform:translateY(-1px);box-shadow:0 3px 10px rgba(22,163,74,.28);}
+  .btn-cart:active{transform:scale(.96);}
+  .btn-cart.in-cart{background:var(--p-l);color:var(--p);border-color:rgba(22,163,74,.35);}
+  .btn-cart.in-cart:hover{background:#fef2f2;color:var(--red);border-color:rgba(239,68,68,.3);}
+  .btn-cart.loading{opacity:.6;cursor:not-allowed;}
+
+  /* Stagger */
+  .pgrid .pc:nth-child(1){animation-delay:.03s}
+  .pgrid .pc:nth-child(2){animation-delay:.06s}
+  .pgrid .pc:nth-child(3){animation-delay:.09s}
+  .pgrid .pc:nth-child(4){animation-delay:.12s}
+  .pgrid .pc:nth-child(5){animation-delay:.15s}
+  .pgrid .pc:nth-child(6){animation-delay:.18s}
+  .pgrid .pc:nth-child(n+7){animation-delay:.21s}
+
+  /* ══ BOTTOM ORDER BAR ══ */
+  .order-bar{
+    position:fixed;bottom:0;left:0;right:0;z-index:998;
+    display:none;padding:10px 16px 12px;
+    background:var(--sur);border-top:1px solid var(--line);
+    box-shadow:0 -4px 28px rgba(0,0,0,.09);
+  }
+  @supports(padding-bottom:env(safe-area-inset-bottom)){
+    .order-bar{padding-bottom:calc(12px + env(safe-area-inset-bottom));}
+  }
+  .ob-inner{
+    max-width:500px;margin:0 auto;
+    display:flex;align-items:center;justify-content:space-between;gap:14px;
+  }
+  .ob-info{display:flex;align-items:center;gap:11px;}
+  .ob-ico{
+    width:40px;height:40px;border-radius:var(--r);
+    background:var(--p-l);display:flex;align-items:center;justify-content:center;
+    color:var(--p);font-size:16px;flex-shrink:0;
+  }
+  .ob-lbl{font-size:.75rem;color:var(--ink-4);font-weight:500;}
+  .ob-count{font-size:.95rem;font-weight:800;color:var(--ink);margin-top:1px;}
+  .ob-price{font-size:.75rem;color:var(--p);font-weight:700;}
+  .ob-btn{
+    display:flex;align-items:center;gap:8px;
+    padding:11px 22px;border-radius:var(--r);
+    font-weight:700;font-size:.88rem;border:none;
+    background:var(--p);color:#fff;
+    text-decoration:none;transition:var(--t);flex-shrink:0;font-family:var(--font);cursor:pointer;
+  }
+  .ob-btn:hover{background:var(--p-d);color:#fff;transform:translateY(-1px);}
+
+  /* ══ CART SIDEBAR ══ */
+  .cart-overlay{
+    display:none;position:fixed;inset:0;z-index:1060;
+    background:rgba(15,23,42,.55);backdrop-filter:blur(3px);
+    opacity:0;transition:opacity .3s;
+  }
+  .cart-overlay.show{display:block;}
+  .cart-overlay.visible{opacity:1;}
+  .cart-panel{
+    position:fixed;top:0;right:0;bottom:0;z-index:1061;
+    width:100%;max-width:420px;
+    background:var(--sur);
+    display:flex;flex-direction:column;
+    transform:translateX(100%);
+    transition:transform .35s cubic-bezier(.32,0,.67,0);
+    box-shadow:-8px 0 40px rgba(0,0,0,.12);
+  }
+  .cart-panel.open{transform:translateX(0);transition-timing-function:cubic-bezier(.33,1,.68,1);}
+  .cp-head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 20px;border-bottom:1px solid var(--line);flex-shrink:0;
+  }
+  .cp-title{font-size:1.05rem;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:9px;}
+  .cp-title i{color:var(--p);}
+  .cp-close{
+    width:36px;height:36px;border-radius:50%;
+    background:var(--sur-2);border:none;
+    display:flex;align-items:center;justify-content:center;
+    color:var(--ink-3);font-size:.9rem;transition:var(--t);
+  }
+  .cp-close:hover{background:var(--line);color:var(--ink);}
+  .cp-body{flex:1;overflow-y:auto;padding:16px;scrollbar-width:thin;scrollbar-color:var(--line) transparent;}
+  .cp-body::-webkit-scrollbar{width:4px;}
+  .cp-body::-webkit-scrollbar-thumb{background:var(--line);border-radius:4px;}
+  .cp-empty{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    height:100%;text-align:center;gap:12px;padding:40px 20px;
+  }
+  .cp-empty-ico{
+    width:72px;height:72px;border-radius:50%;
+    background:var(--sur-2);
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.8rem;color:var(--ink-4);
+  }
+  .cp-empty h4{font-size:.95rem;font-weight:800;color:var(--ink);margin:0;}
+  .cp-empty p{font-size:.83rem;color:var(--ink-4);margin:0;line-height:1.5;}
+  .cp-foot{
+    border-top:1px solid var(--line);padding:16px 20px;flex-shrink:0;
+    background:var(--sur);
+  }
+  @supports(padding-bottom:env(safe-area-inset-bottom)){
+    .cp-foot{padding-bottom:calc(16px + env(safe-area-inset-bottom));}
+  }
+  .cp-total-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+  .cp-total-lbl{font-size:.85rem;font-weight:600;color:var(--ink-3);}
+  .cp-total-val{font-size:1.15rem;font-weight:800;color:var(--p);}
+  .cp-checkout{
+    width:100%;padding:13px;border-radius:var(--r);
+    background:var(--p);color:#fff;border:none;
+    font-size:.92rem;font-weight:700;font-family:var(--font);
+    transition:var(--t);display:flex;align-items:center;justify-content:center;gap:9px;
+  }
+  .cp-checkout:hover{background:var(--p-d);transform:translateY(-1px);}
+
+  /* Cart item */
+  .ci{
+    display:flex;gap:12px;padding:12px;
+    border-radius:var(--r);border:1px solid var(--line-s);
+    margin-bottom:10px;background:var(--sur);transition:var(--t);
+  }
+  .ci:hover{border-color:rgba(22,163,74,.2);background:var(--p-xl);}
+  .ci-img{
+    width:52px;height:52px;border-radius:var(--r-s);
+    background:var(--bg);flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-size:1.4rem;
+  }
+  .ci-info{flex:1;min-width:0;}
+  .ci-name{font-size:.82rem;font-weight:700;color:var(--ink);line-height:1.3;margin-bottom:3px;}
+  .ci-inn{font-size:.7rem;color:var(--ink-4);margin-bottom:6px;}
+  .ci-bottom{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .ci-price{font-size:.85rem;font-weight:800;color:var(--p);}
+  .ci-qty{display:flex;align-items:center;gap:6px;}
+  .ci-qty-btn{
+    width:26px;height:26px;border-radius:7px;
+    background:var(--sur-2);border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    font-size:.75rem;font-weight:700;color:var(--ink-3);transition:var(--t);
+  }
+  .ci-qty-btn:hover{background:var(--p-l);border-color:rgba(22,163,74,.3);color:var(--p);}
+  .ci-qty-num{font-size:.82rem;font-weight:800;color:var(--ink);min-width:18px;text-align:center;}
+  .ci-del{
+    width:26px;height:26px;border-radius:7px;
+    background:var(--sur-2);border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    font-size:.72rem;color:var(--ink-4);transition:var(--t);
+  }
+  .ci-del:hover{background:#fef2f2;border-color:#fecaca;color:var(--red);}
+
+  /* ══ TOAST ══ */
+  .toast-wrap{position:fixed;top:16px;right:16px;z-index:2000;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
+  .toast-item{
+    display:flex;align-items:center;gap:10px;
+    padding:11px 14px;border-radius:14px;
+    color:#fff;font-size:.84rem;font-weight:600;font-family:var(--font);
+    box-shadow:0 8px 28px rgba(0,0,0,.18);
+    pointer-events:auto;
+    animation:toastIn .3s cubic-bezier(.22,1,.36,1) both;
+    min-width:240px;max-width:320px;
+  }
+  .toast-item.removing{animation:toastOut .3s ease forwards;}
+  @keyframes toastIn{from{opacity:0;transform:translateX(100%) scale(.9);}to{opacity:1;transform:none;}}
+  @keyframes toastOut{to{opacity:0;transform:translateX(100%) scale(.9);}}
+  .toast-item.success{background:#16a34a;}
+  .toast-item.info{background:#0ea5e9;}
+  .toast-item.danger{background:#ef4444;}
+  .toast-item.warning{background:#f59e0b;}
+
+  /* ══ FILTER BAR ══ */
+  .filter-bar{
+    display:flex;align-items:center;gap:8px;
+    margin-bottom:20px;flex-wrap:wrap;
+  }
+  .filter-label{font-size:.78rem;font-weight:700;color:var(--ink-4);white-space:nowrap;}
+  .filter-chip{
+    display:inline-flex;align-items:center;gap:5px;
+    padding:5px 13px;border-radius:20px;border:1.5px solid var(--line);
+    font-size:.78rem;font-weight:600;color:var(--ink-3);
+    background:var(--sur);transition:var(--t);cursor:pointer;white-space:nowrap;
+  }
+  .filter-chip:hover{border-color:rgba(22,163,74,.3);color:var(--p);}
+  .filter-chip.active{background:var(--p-l);border-color:rgba(22,163,74,.35);color:var(--p);}
+  .filter-sort{
+    margin-left:auto;
+    display:flex;align-items:center;gap:7px;
+    padding:7px 13px;border-radius:var(--r-s);
+    border:1.5px solid var(--line);background:var(--sur);
+    font-size:.78rem;font-weight:600;color:var(--ink-3);cursor:pointer;
+    transition:var(--t);
+  }
+  .filter-sort:hover{border-color:var(--p);color:var(--p);}
+
+  /* ══ PAGINATION ══ */
+  .pg-wrap{display:flex;justify-content:center;flex-wrap:wrap;gap:5px;margin-top:32px;}
+  .pg-wrap .page-link{
+    width:36px;height:36px;border-radius:var(--r-s)!important;
+    display:flex;align-items:center;justify-content:center;
+    font-size:.82rem;font-weight:600;padding:0!important;
+    border:1px solid var(--line)!important;color:var(--ink-3)!important;
+    background:var(--sur)!important;transition:var(--t)!important;
+  }
+  .pg-wrap .page-link:hover{background:var(--p-xl)!important;color:var(--p)!important;border-color:rgba(22,163,74,.3)!important;}
+  .pg-wrap .page-item.active .page-link{background:var(--p)!important;border-color:var(--p)!important;color:#fff!important;}
+
+  /* ══ SEARCH HIGHLIGHT ══ */
+  .search-highlight{
+    display:flex;align-items:center;gap:8px;
+    padding:10px 14px;background:var(--p-xl);border-radius:var(--r);
+    border:1px solid rgba(22,163,74,.2);margin-bottom:16px;
+    font-size:.85rem;font-weight:600;color:var(--p-d);
+  }
+  .search-highlight .q{font-weight:800;}
+  .search-clear{margin-left:auto;font-size:.75rem;color:var(--ink-4);cursor:pointer;transition:var(--t);}
+  .search-clear:hover{color:var(--red);}
+
+  /* ══ MISC ══ */
+  @media(max-width:360px){.brand-name{font-size:.88rem;}}
+  </style>
+</head>
+<body>
+
+<!-- ══════════ HEADER ══════════ -->
+<header class="site-header">
+  <div class="top-bar">
+
+    <a href="#" class="brand" onclick="return false">
+      <span class="brand-icon"><i class="fas fa-plus-square"></i></span>
+      <span class="brand-name">
+        <span class="brand-do">vitagum</span><span class="brand-ri">-</span><span class="brand-do">gummy</span><span class="brand-dot">.uz</span>
+      </span>
+    </a>
+
+    <div class="search-wrap" id="searchWrap">
+      <i class="fas fa-search s-ico"></i>
+      <input type="text" id="searchInput" placeholder="Dori, vitamin, preparatlarni qidiring…" autocomplete="off" oninput="filterProducts(this.value)">
+      <button class="s-btn" onclick="filterProducts(document.getElementById('searchInput').value)">
+        <i class="fas fa-search me-1"></i>Qidirish
+      </button>
+    </div>
+
+    <div class="hdr-actions">
+      <button class="hdr-btn" id="cartBtn" title="Savat" onclick="openCart()">
+        <i class="fas fa-shopping-bag"></i>
+        <span class="cart-badge hidden" id="cartBadge">0</span>
+      </button>
+      <div class="dropdown">
+        <button class="hdr-btn" data-bs-toggle="dropdown" title="Aloqa">
+          <i class="fas fa-headset"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end c-menu">
+          <li>
+            <span class="c-link"><i class="fas fa-pills"></i>
+              <div><div style="font-size:.7rem;color:var(--ink-4);font-weight:600;">Ishlash vaqti</div>
+              <div style="font-size:.82rem;font-weight:700;color:var(--ink);">08:00 – 22:00</div></div>
+            </span>
+          </li>
+          <li><hr class="dropdown-divider my-1"></li>
+          <li><a href="tel:+998712001122" class="c-link"><i class="fas fa-phone"></i><span>+998 71 200-11-22 <span class="tel-num">(Asosiy)</span></span></a></li>
+          <li><a href="tel:+998991234567" class="c-link"><i class="fas fa-phone"></i><span>+998 99 123-45-67</span></a></li>
+          <li><a href="#" class="c-link"><i class="fab fa-telegram"></i><span>Telegram-bot</span></a></li>
+          <li><a href="#" class="c-link"><i class="fab fa-whatsapp" style="color:#25d366"></i><span>WhatsApp</span></a></li>
+          <li><hr class="dropdown-divider my-1"></li>
+          <li><span class="c-link"><i class="fas fa-map-marker-alt" style="color:var(--red)"></i><span style="font-size:.8rem">Toshkent sh., Yunusobod t., 7-mavze</span></span></li>
+        </ul>
+      </div>
+      <div class="dropdown">
+        <button class="hdr-btn" data-bs-toggle="dropdown" title="Profil">
+          <i class="fas fa-user"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end c-menu">
+          <li><a href="#" class="c-link"><i class="fas fa-sign-in-alt"></i>Kirish</a></li>
+          <li><a href="#" class="c-link"><i class="fas fa-user-plus"></i>Ro'yxatdan o'tish</a></li>
+          <li><hr class="dropdown-divider my-1"></li>
+          <li><a href="#" class="c-link"><i class="fas fa-clipboard-list"></i>Buyurtmalarim</a></li>
+          <li><a href="#" class="c-link"><i class="fas fa-heart" style="color:var(--red)"></i>Sevimlilar</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- CATEGORY BAR -->
+  <div class="cat-bar">
+    <button class="cat-trigger" id="catTrigger">
+      <span class="ct-icon"><i class="fas fa-th-large"></i></span>
+      <span class="ct-label" id="ctLabel">Barcha kategoriyalar</span>
+      <span class="ct-count">9 ta</span>
+      <i class="fas fa-chevron-down ct-chev" id="ctChev"></i>
+    </button>
+    <div class="cat-inner">
+      <button class="cat-nav" id="catPrev" disabled><i class="fas fa-chevron-left"></i></button>
+      <div class="cat-scr-wrap">
+        <div class="fade-l"></div>
+        <div class="cat-scroller" id="catScroller">
+          <a href="#" class="cat-pill active" onclick="filterCat('all',this)"><i class="fas fa-th-large"></i>Barchasi</a>
+          <a href="#" class="cat-pill" onclick="filterCat('antibiotik',this)"><i class="fas fa-bacteria"></i>Antibiotikar</a>
+          <a href="#" class="cat-pill" onclick="filterCat('vitamin',this)"><i class="fas fa-lemon"></i>Vitaminlar</a>
+          <a href="#" class="cat-pill" onclick="filterCat('yurak',this)"><i class="fas fa-heartbeat"></i>Yurak uchun</a>
+          <a href="#" class="cat-pill" onclick="filterCat('qon',this)"><i class="fas fa-tint"></i>Qon bosimi</a>
+          <a href="#" class="cat-pill" onclick="filterCat('bolalar',this)"><i class="fas fa-baby"></i>Bolalar uchun</a>
+          <a href="#" class="cat-pill" onclick="filterCat('ogrib',this)"><i class="fas fa-head-side-mask"></i>Og'riq qoldiruvchi</a>
+          <a href="#" class="cat-pill" onclick="filterCat('kosmetika',this)"><i class="fas fa-spa"></i>Tibbiy kosmetika</a>
+          <a href="#" class="cat-pill" onclick="filterCat('qurilma',this)"><i class="fas fa-stethoscope"></i>Tibbiy qurilmalar</a>
+        </div>
+        <div class="fade-r"></div>
+      </div>
+      <button class="cat-nav" id="catNext"><i class="fas fa-chevron-right"></i></button>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════ MOBILE DRAWER ══════════ -->
+<div class="cat-overlay" id="catOverlay" onclick="closeDrawer()"></div>
+<div class="cat-drawer" id="catDrawer">
+  <div class="drawer-handle"></div>
+  <div class="drawer-head">
+    <span class="drawer-title"><i class="fas fa-th-large" style="color:var(--p);margin-right:8px"></i>Kategoriyalar</span>
+    <button class="drawer-close" onclick="closeDrawer()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="drawer-list">
+    <a href="#" class="drawer-item active" onclick="filterCat('all',null);closeDrawer();return false">
+      <span class="di-ico"><i class="fas fa-th-large"></i></span>
+      <span class="di-name">Barchasi</span>
+      <i class="fas fa-check di-check"></i>
+    </a>
+    <a href="#" class="drawer-item" onclick="filterCat('antibiotik',null);closeDrawer();return false">
+      <span class="di-ico"><i class="fas fa-bacteria"></i></span>
+      <span class="di-name">Antibiotikar</span>
+      <i class="fas fa-check di-check"></i>
+    </a>
+    <a href="#" class="drawer-item" onclick="filterCat('vitamin',null);closeDrawer();return false">
+      <span class="di-ico"><i class="fas fa-lemon"></i></span>
+      <span class="di-name">Vitaminlar</span>
+      <i class="fas fa-check di-check"></i>
+    </a>
+    <a href="#" class="drawer-item" onclick="filterCat('yurak',null);closeDrawer();return false">
+      <span class="di-ico"><i class="fas fa-heartbeat"></i></span>
+      <span class="di-name">Yurak uchun</span>
+      <i class="fas fa-check di-check"></i>
+    </a>
+    <a href="#" class="drawer-item" onclick="filterCat('qon',null);closeDrawer();return false">
+      <span class="di-ico"><i class="fas fa-tint"></i></span>
+      <span class="di-name">Qon bosimi</span>
+      <i class="fas fa-check di-check"></i>
+    </a>
+    <a href="#" class="drawer-item" onclick="filterCat('bolalar',null);closeDrawer();return false">
+      <span class="di-ico"><i class="fas fa-baby"></i></span>
+      <span class="di-name">Bolalar uchun</span>
+      <i class="fas fa-check di-check"></i>
+    </a>
+    <a href="#" class="drawer-item" onclick="filterCat('ogrib',null);closeDrawer();return false">
+      <span class="di-ico"><i class="fas fa-head-side-mask"></i></span>
+      <span class="di-name">Og'riq qoldiruvchi</span>
+      <i class="fas fa-check di-check"></i>
+    </a>
+    <a href="#" class="drawer-item" onclick="filterCat('kosmetika',null);closeDrawer();return false">
+      <span class="di-ico"><i class="fas fa-spa"></i></span>
+      <span class="di-name">Tibbiy kosmetika</span>
+      <i class="fas fa-check di-check"></i>
+    </a>
+    <a href="#" class="drawer-item" onclick="filterCat('qurilma',null);closeDrawer();return false">
+      <span class="di-ico"><i class="fas fa-stethoscope"></i></span>
+      <span class="di-name">Tibbiy qurilmalar</span>
+      <i class="fas fa-check di-check"></i>
+    </a>
+  </div>
+</div>
+
+<!-- ══════════ CART SIDEBAR ══════════ -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="cart-panel" id="cartPanel">
+  <div class="cp-head">
+    <div class="cp-title"><i class="fas fa-shopping-bag"></i>Savat <span id="cpCount" style="font-size:.8rem;color:var(--ink-4);font-weight:600;margin-left:4px"></span></div>
+    <button class="cp-close" onclick="closeCart()"><i class="fas fa-times"></i></button>
+  </div>
+  <div class="cp-body" id="cpBody">
+    <div class="cp-empty">
+      <div class="cp-empty-ico"><i class="fas fa-shopping-bag"></i></div>
+      <h4>Savat bo'sh</h4>
+      <p>Hali hech qanday mahsulot qo'shilmagan. Dorilar bo'limidan xarid qiling.</p>
+    </div>
+  </div>
+  <div class="cp-foot" id="cpFoot" style="display:none">
+    <div class="cp-total-row">
+      <span class="cp-total-lbl">Jami summa:</span>
+      <span class="cp-total-val" id="cpTotal">0 so'm</span>
+    </div>
+    <button class="cp-checkout">
+      <i class="fas fa-credit-card"></i>Buyurtma berish
+    </button>
+  </div>
+</div>
+
+<!-- ══════════ TOAST ══════════ -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- ══════════ MAIN ══════════ -->
+<main>
+<div class="main-wrap">
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-ico green"><i class="fas fa-pills"></i></div>
+      <div class="stat-val">5,000+</div>
+      <div class="stat-lbl">Dori nomi</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-ico blue"><i class="fas fa-truck"></i></div>
+      <div class="stat-val">24/7</div>
+      <div class="stat-lbl">Yetkazib berish</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-ico amber"><i class="fas fa-shield-alt"></i></div>
+      <div class="stat-val">100%</div>
+      <div class="stat-lbl">Asl mahsulot</div>
+    </div>
+  </div>
+
+  <!-- SECTION HEADER -->
+  <div class="sec-head">
+    <h2 id="secTitle">Barcha dorilar</h2>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span class="sec-count" id="secCount">20 ta</span>
+      <a href="#" class="see-all" onclick="return false">Barchasi <i class="fas fa-arrow-right" style="font-size:.7rem"></i></a>
+    </div>
+  </div>
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <span class="filter-label">Filtr:</span>
+    <button class="filter-chip active" onclick="toggleFilter(this,'all_types')"><i class="fas fa-th"></i>Barchasi</button>
+    <button class="filter-chip" onclick="toggleFilter(this,'rx')"><span class="rx-chip rx" style="border:none;background:transparent;color:#dc2626;padding:0;font-size:.7rem">Rx</span>Retseptli</button>
+    <button class="filter-chip" onclick="toggleFilter(this,'otc')"><span class="rx-chip otc" style="border:none;background:transparent;color:var(--p);padding:0;font-size:.7rem">OTC</span>Retseptsiz</button>
+    <button class="filter-chip" onclick="toggleFilter(this,'sale')"><i class="fas fa-tag" style="color:var(--red)"></i>Chegirma</button>
+    <div class="filter-sort" onclick="showToast('Tartiblash','info')">
+      <i class="fas fa-sort-amount-down"></i>Tartiblash
+    </div>
+  </div>
+
+  <!-- SEARCH RESULT -->
+  <div class="search-highlight" id="searchHighlight" style="display:none">
+    <i class="fas fa-search"></i>
+    "<span class="q" id="searchQ"></span>" bo'yicha qidiruv natijalari
+    <span class="search-clear" onclick="clearSearch()"><i class="fas fa-times"></i> Tozalash</span>
+  </div>
+
+  <!-- PRODUCT GRID -->
+  <div class="pgrid" id="pgrid"></div>
+
+  <!-- PAGINATION -->
+  <nav class="mt-4" id="pgNav">
+    <ul class="pagination pg-wrap">
+      <li class="page-item disabled"><a class="page-link"><i class="fas fa-chevron-left" style="font-size:.7rem"></i></a></li>
+      <li class="page-item active"><a class="page-link">1</a></li>
+      <li class="page-item"><a class="page-link">2</a></li>
+      <li class="page-item"><a class="page-link">3</a></li>
+      <li class="page-item"><a class="page-link">4</a></li>
+      <li class="page-item"><a class="page-link"><i class="fas fa-chevron-right" style="font-size:.7rem"></i></a></li>
+    </ul>
+  </nav>
+
+</div>
+</main>
+
+<!-- ORDER BAR -->
+<div class="order-bar" id="orderBar">
+  <div class="ob-inner">
+    <div class="ob-info">
+      <div class="ob-ico"><i class="fas fa-shopping-bag"></i></div>
+      <div>
+        <div class="ob-lbl">Savatda</div>
+        <div class="ob-count"><span id="obCount">0</span> ta mahsulot</div>
+        <div class="ob-price" id="obPrice">0 so'm</div>
+      </div>
+    </div>
+    <button class="ob-btn" onclick="openCart()">
+      <i class="fas fa-arrow-right"></i>Buyurtma
+    </button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+/* ════════════════════════════════════
+   DATA
+════════════════════════════════════ */
+const PRODUCTS = [
+  {id:1, name:"Paracetamol 500mg",        inn:"Paracetamol",       mfr:"Pharmstandart",  price:8500,  old:null,  cat:"ogrib",     type:"otc",  ico:"💊", bg:"#f0fdf4", sale:false, isNew:false},
+  {id:2, name:"Amoxicillin 500mg kapsul", inn:"Amoxicillin",       mfr:"Sintez OAO",     price:32000, old:40000, cat:"antibiotik",type:"rx",   ico:"💉", bg:"#fef2f2", sale:true,  isNew:false},
+  {id:3, name:"Vitamin C 1000mg",         inn:"Ascorbic acid",     mfr:"Pharmamed",      price:18000, old:null,  cat:"vitamin",   type:"otc",  ico:"🍋", bg:"#fffbeb", sale:false, isNew:true},
+  {id:4, name:"Atorvastatin 20mg",        inn:"Atorvastatin",      mfr:"KRKA",           price:45000, old:52000, cat:"yurak",     type:"rx",   ico:"❤️", bg:"#fef2f2", sale:true,  isNew:false},
+  {id:5, name:"Nurofen 400mg",            inn:"Ibuprofen",         mfr:"Reckitt",        price:22000, old:null,  cat:"ogrib",     type:"otc",  ico:"💊", bg:"#f0f9ff", sale:false, isNew:false},
+  {id:6, name:"Vitamin D3 2000 IU",       inn:"Cholecalciferol",   mfr:"Solgar",         price:55000, old:65000, cat:"vitamin",   type:"otc",  ico:"☀️", bg:"#fffbeb", sale:true,  isNew:false},
+  {id:7, name:"Amlodipine 10mg",          inn:"Amlodipine",        mfr:"Gedeon Richter", price:28000, old:null,  cat:"qon",       type:"rx",   ico:"💊", bg:"#f5f3ff", sale:false, isNew:true},
+  {id:8, name:"Nurofen Baby 100mg/5ml",   inn:"Ibuprofen",         mfr:"Reckitt",        price:35000, old:null,  cat:"bolalar",   type:"otc",  ico:"👶", bg:"#e0f2fe", sale:false, isNew:true},
+  {id:9, name:"Tonometr OMRON M2",        inn:"—",                 mfr:"OMRON",          price:285000,old:320000,cat:"qurilma",   type:"otc",  ico:"🩺", bg:"#f0fdf4", sale:true,  isNew:false},
+  {id:10,name:"Cetirizine 10mg",          inn:"Cetirizine HCl",    mfr:"GlaxoSmithKline",price:15000, old:null,  cat:"ogrib",     type:"otc",  ico:"💊", bg:"#f0fdf4", sale:false, isNew:false},
+  {id:11,name:"Omega-3 1000mg",           inn:"Fish oil",          mfr:"Now Foods",      price:78000, old:90000, cat:"vitamin",   type:"otc",  ico:"🐟", bg:"#e0f2fe", sale:true,  isNew:false},
+  {id:12,name:"Metformin 500mg",          inn:"Metformin HCl",     mfr:"Berlin-Chemie",  price:12000, old:null,  cat:"yurak",     type:"rx",   ico:"💊", bg:"#fef2f2", sale:false, isNew:false},
+  {id:13,name:"Ciprofloxacin 500mg",      inn:"Ciprofloxacin",     mfr:"Bayer",          price:42000, old:50000, cat:"antibiotik",type:"rx",   ico:"🦠", bg:"#fef2f2", sale:true,  isNew:false},
+  {id:14,name:"Lisinopril 10mg",          inn:"Lisinopril",        mfr:"Akrikhin",       price:19000, old:null,  cat:"qon",       type:"rx",   ico:"💊", bg:"#f5f3ff", sale:false, isNew:false},
+  {id:15,name:"Suprastin 25mg",           inn:"Chloropyramine",    mfr:"Egis",           price:11000, old:null,  cat:"ogrib",     type:"rx",   ico:"💊", bg:"#f0fdf4", sale:false, isNew:false},
+  {id:16,name:"Baby Calm (40ml)",         inn:"Plant extract",     mfr:"Bio-Gaia",       price:62000, old:72000, cat:"bolalar",   type:"otc",  ico:"🍼", bg:"#e0f2fe", sale:true,  isNew:true},
+  {id:17,name:"Glucometer OnePlus",       inn:"—",                 mfr:"One Touch",      price:195000,old:null,  cat:"qurilma",   type:"otc",  ico:"🩸", bg:"#fef2f2", sale:false, isNew:true},
+  {id:18,name:"Bepanten krem 30g",        inn:"Dexpanthenol",      mfr:"Bayer",          price:38000, old:45000, cat:"kosmetika", type:"otc",  ico:"🧴", bg:"#f0fdf4", sale:true,  isNew:false},
+  {id:19,name:"Cetaphil yuvish geli",     inn:"Cetearyl alcohol",  mfr:"Galderma",       price:88000, old:null,  cat:"kosmetika", type:"otc",  ico:"🧼", bg:"#e0f2fe", sale:false, isNew:true},
+  {id:20,name:"Magnesium B6 50mg",        inn:"Magnesium + B6",    mfr:"Sanofi",         price:47000, old:55000, cat:"vitamin",   type:"otc",  ico:"💊", bg:"#fffbeb", sale:true,  isNew:false},
+];
+
+/* ════════════════════════════════════
+   STATE
+════════════════════════════════════ */
+let cart = {};
+let currentCat = 'all';
+let currentSearch = '';
+let currentFilter = 'all_types';
+
+/* ════════════════════════════════════
+   RENDER PRODUCTS
+════════════════════════════════════ */
+function fmt(n){return Math.round(n).toLocaleString('uz-UZ');}
+
+function getFiltered(){
+  return PRODUCTS.filter(p=>{
+    const catOk = currentCat==='all' || p.cat===currentCat;
+    const searchOk = !currentSearch || p.name.toLowerCase().includes(currentSearch.toLowerCase()) || p.inn.toLowerCase().includes(currentSearch.toLowerCase());
+    const filterOk = currentFilter==='all_types' || (currentFilter==='rx' && p.type==='rx') || (currentFilter==='otc' && p.type==='otc') || (currentFilter==='sale' && p.sale);
+    return catOk && searchOk && filterOk;
+  });
+}
+
+function renderGrid(){
+  const list = getFiltered();
+  const grid = document.getElementById('pgrid');
+  document.getElementById('secCount').textContent = list.length+' ta';
+  if(list.length===0){
+    grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:64px 24px;background:var(--sur);border-radius:var(--r-xl);border:2px dashed var(--line);">
+      <div style="font-size:2.5rem;margin-bottom:12px">🔍</div>
+      <h5 style="font-size:1rem;font-weight:800;color:var(--ink);margin-bottom:8px">Natija topilmadi</h5>
+      <p style="font-size:.88rem;color:var(--ink-4);margin:0">Boshqa kalit so'z kiriting yoki kategoriyani o'zgartiring</p>
+    </div>`;
+    return;
+  }
+  grid.innerHTML = list.map(p=>{
+    const inC = cart[p.id]&&cart[p.id].qty>0;
+    const rxBadge = p.type==='rx'
+      ? `<span class="rx-chip rx">Rx</span>`
+      : p.type==='vita'
+        ? `<span class="rx-chip vita">Vita</span>`
+        : `<span class="rx-chip otc">OTC</span>`;
+    const topBadge = p.sale ? `<span class="pc-badge sale">-${Math.round((1-p.price/p.old)*100)}%</span>`
+                  : p.isNew ? `<span class="pc-badge new">Yangi</span>` : '';
+    const oldPrice = p.old ? `<span class="pc-old">${fmt(p.old)} so'm</span>` : '';
+    return `
+    <div class="pc" data-id="${p.id}">
+      ${topBadge}
+      <button class="pc-fav ${p.fav?'active':''}" onclick="toggleFav(event,${p.id})"><i class="fa${p.fav?'s':'r'} fa-heart"></i></button>
+      <div class="pc-img">
+        <div class="pc-img-inner">
+          <div class="med-icon" style="background:${p.bg}">${p.ico}</div>
+        </div>
+        <a href="#" onclick="return false"></a>
+      </div>
+      <div class="pc-body">
+        <div class="pc-rx">${rxBadge}</div>
+        <div class="pc-name">${p.name}</div>
+        <div class="pc-inn">${p.inn}</div>
+        <div class="pc-mfr"><i class="fas fa-industry"></i>${p.mfr}</div>
+        <div class="pc-price-row">
+          <span class="pc-price">${fmt(p.price)} so'm</span>
+          ${oldPrice}
+        </div>
+        <div class="pc-actions">
+          <a href="#" class="btn-eye" onclick="return false" title="Batafsil"><i class="fas fa-eye"></i></a>
+          <button class="btn-cart${inC?' in-cart':''}" onclick="toggleCart(${p.id},this)">
+            <i class="fas ${inC?'fa-check':'fa-plus'}"></i>
+            <span>${inC?"Qo'shildi":"Savatga"}</span>
+          </button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ════════════════════════════════════
+   CART
+════════════════════════════════════ */
+function toggleCart(id, btn){
+  const p = PRODUCTS.find(x=>x.id===id);
+  if(cart[id]&&cart[id].qty>0){
+    delete cart[id];
+    if(btn){btn.classList.remove('in-cart');btn.innerHTML='<i class="fas fa-plus"></i><span>Savatga</span>';}
+    showToast("Savatdan olib tashlandi","info");
+  } else {
+    cart[id]={...p, qty:1};
+    if(btn){btn.classList.add('in-cart');btn.innerHTML='<i class="fas fa-check"></i><span>Qo\'shildi</span>';}
+    showToast(`${p.name} savatga qo'shildi ✓`,"success");
+  }
+  updateCartUI();
+}
+
+function updateCartUI(){
+  const items = Object.values(cart);
+  const count = items.reduce((s,i)=>s+i.qty,0);
+  const total = items.reduce((s,i)=>s+i.price*i.qty,0);
+  const badge = document.getElementById('cartBadge');
+  badge.textContent=count;
+  if(count>0){badge.classList.remove('hidden');badge.classList.add('bump');setTimeout(()=>badge.classList.remove('bump'),320);}
+  else badge.classList.add('hidden');
+  document.getElementById('obCount').textContent=count;
+  document.getElementById('obPrice').textContent=fmt(total)+' so'm';
+  document.getElementById('cpCount').textContent=count>0?`(${count} ta)`:'';
+  document.getElementById('cpTotal').textContent=fmt(total)+' so'm';
+  const bar=document.getElementById('orderBar');
+  if(count>0){bar.style.display='block';bar.style.animation='none';}
+  else bar.style.display='none';
+  renderCartPanel();
+}
+
+function renderCartPanel(){
+  const items = Object.values(cart);
+  const body = document.getElementById('cpBody');
+  const foot = document.getElementById('cpFoot');
+  if(items.length===0){
+    body.innerHTML=`<div class="cp-empty">
+      <div class="cp-empty-ico"><i class="fas fa-shopping-bag"></i></div>
+      <h4>Savat bo'sh</h4>
+      <p>Hali hech qanday mahsulot qo'shilmagan.</p>
+    </div>`;
+    foot.style.display='none';
+    return;
+  }
+  foot.style.display='block';
+  body.innerHTML = items.map(i=>`
+    <div class="ci" id="ci-${i.id}">
+      <div class="ci-img">${i.ico}</div>
+      <div class="ci-info">
+        <div class="ci-name">${i.name}</div>
+        <div class="ci-inn">${i.inn}</div>
+        <div class="ci-bottom">
+          <div class="ci-price">${fmt(i.price*i.qty)} so'm</div>
+          <div class="ci-qty">
+            <button class="ci-qty-btn" onclick="changeQty(${i.id},-1)"><i class="fas fa-minus" style="font-size:.6rem"></i></button>
+            <span class="ci-qty-num">${i.qty}</span>
+            <button class="ci-qty-btn" onclick="changeQty(${i.id},1)"><i class="fas fa-plus" style="font-size:.6rem"></i></button>
+          </div>
+          <button class="ci-del" onclick="removeFromCart(${i.id})"><i class="fas fa-trash" style="font-size:.65rem"></i></button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function changeQty(id, delta){
+  if(!cart[id]) return;
+  cart[id].qty = Math.max(1, cart[id].qty+delta);
+  updateCartUI();
+}
+
+function removeFromCart(id){
+  delete cart[id];
+  const btn = document.querySelector(`.btn-cart[onclick="toggleCart(${id},this)"]`);
+  if(btn){btn.classList.remove('in-cart');btn.innerHTML='<i class="fas fa-plus"></i><span>Savatga</span>';}
+  updateCartUI();
+}
+
+/* ════════════════════════════════════
+   CART PANEL OPEN/CLOSE
+════════════════════════════════════ */
+function openCart(){
+  const o=document.getElementById('cartOverlay');
+  const p=document.getElementById('cartPanel');
+  o.classList.add('show');
+  requestAnimationFrame(()=>{o.classList.add('visible');p.classList.add('open');});
+  document.body.style.overflow='hidden';
+}
+function closeCart(){
+  const o=document.getElementById('cartOverlay');
+  const p=document.getElementById('cartPanel');
+  o.classList.remove('visible');
+  p.classList.remove('open');
+  document.body.style.overflow='';
+  setTimeout(()=>o.classList.remove('show'),350);
+}
+
+/* ════════════════════════════════════
+   CATEGORY FILTER
+════════════════════════════════════ */
+function filterCat(cat, el){
+  currentCat=cat;
+  document.querySelectorAll('.cat-pill').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.drawer-item').forEach(p=>p.classList.remove('active'));
+  if(el) el.classList.add('active');
+  const titles={'all':'Barcha dorilar','antibiotik':'Antibiotikar','vitamin':'Vitaminlar','yurak':'Yurak uchun','qon':'Qon bosimi','bolalar':'Bolalar uchun','ogrib':"Og'riq qoldiruvchi",'kosmetika':'Tibbiy kosmetika','qurilma':'Tibbiy qurilmalar'};
+  document.getElementById('secTitle').textContent = titles[cat]||'Barcha dorilar';
+  renderGrid();
+  return false;
+}
+
+/* ════════════════════════════════════
+   SEARCH
+════════════════════════════════════ */
+function filterProducts(q){
+  currentSearch=q.trim();
+  const hl=document.getElementById('searchHighlight');
+  if(currentSearch){
+    hl.style.display='flex';
+    document.getElementById('searchQ').textContent=currentSearch;
+  } else {
+    hl.style.display='none';
+  }
+  renderGrid();
+}
+function clearSearch(){
+  currentSearch='';
+  document.getElementById('searchInput').value='';
+  document.getElementById('searchHighlight').style.display='none';
+  renderGrid();
+}
+
+/* ════════════════════════════════════
+   FILTER CHIPS
+════════════════════════════════════ */
+function toggleFilter(el, type){
+  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  currentFilter=type;
+  renderGrid();
+}
+
+/* ════════════════════════════════════
+   FAVORITE
+════════════════════════════════════ */
+function toggleFav(e, id){
+  e.preventDefault(); e.stopPropagation();
+  const p=PRODUCTS.find(x=>x.id===id);
+  if(!p) return;
+  p.fav=!p.fav;
+  const btn=e.currentTarget;
+  btn.classList.toggle('active',p.fav);
+  btn.innerHTML=`<i class="fa${p.fav?'s':'r'} fa-heart"></i>`;
+  showToast(p.fav?"Sevimlilarga qo'shildi ♥":"Sevimlilardan olib tashlandi","info");
+}
+
+/* ════════════════════════════════════
+   TOAST
+════════════════════════════════════ */
+function showToast(msg, type='success'){
+  const wrap=document.getElementById('toastWrap');
+  const icons={success:'fa-check-circle',info:'fa-info-circle',danger:'fa-exclamation-circle',warning:'fa-exclamation-triangle'};
+  const el=document.createElement('div');
+  el.className=`toast-item ${type}`;
+  el.innerHTML=`<i class="fas ${icons[type]||icons.success}"></i><span>${msg}</span>`;
+  wrap.appendChild(el);
+  setTimeout(()=>{
+    el.classList.add('removing');
+    setTimeout(()=>el.remove(),300);
+  },2200);
+}
+
+/* ════════════════════════════════════
+   MOBILE DRAWER
+════════════════════════════════════ */
+function openDrawer(){
+  const o=document.getElementById('catOverlay');
+  const d=document.getElementById('catDrawer');
+  const t=document.getElementById('catTrigger');
+  o.classList.add('show');
+  requestAnimationFrame(()=>{o.classList.add('visible');d.classList.add('open');});
+  t.classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeDrawer(){
+  const o=document.getElementById('catOverlay');
+  const d=document.getElementById('catDrawer');
+  const t=document.getElementById('catTrigger');
+  o.classList.remove('visible');
+  d.classList.remove('open');
+  t.classList.remove('open');
+  document.body.style.overflow='';
+  setTimeout(()=>o.classList.remove('show'),340);
+}
+document.getElementById('catTrigger').addEventListener('click',()=>{
+  document.getElementById('catDrawer').classList.contains('open')?closeDrawer():openDrawer();
+});
+
+/* Swipe down to close */
+const drawer=document.getElementById('catDrawer');
+let _sy=0, _dr=false;
+drawer.addEventListener('touchstart',e=>{_sy=e.touches[0].clientY;_dr=true;},{passive:true});
+drawer.addEventListener('touchmove',e=>{if(!_dr)return;const dy=e.touches[0].clientY-_sy;if(dy>0)drawer.style.transform=`translateY(${dy}px)`;},{passive:true});
+drawer.addEventListener('touchend',e=>{const dy=e.changedTouches[0].clientY-_sy;drawer.style.transform='';if(dy>80)closeDrawer();_dr=false;});
+
+/* ════════════════════════════════════
+   CATEGORY ARROWS
+════════════════════════════════════ */
+const scroller=document.getElementById('catScroller');
+const btnPrev=document.getElementById('catPrev');
+const btnNext=document.getElementById('catNext');
+function updArrows(){
+  btnPrev.disabled=scroller.scrollLeft<=4;
+  btnNext.disabled=scroller.scrollLeft+scroller.clientWidth>=scroller.scrollWidth-4;
+}
+btnPrev.onclick=()=>scroller.scrollBy({left:-200,behavior:'smooth'});
+btnNext.onclick=()=>scroller.scrollBy({left:200,behavior:'smooth'});
+scroller.addEventListener('scroll',updArrows,{passive:true});
+updArrows();
+
+/* ════════════════════════════════════
+   INIT
+════════════════════════════════════ */
+renderGrid();
+</script>
+</body>
+</html>
